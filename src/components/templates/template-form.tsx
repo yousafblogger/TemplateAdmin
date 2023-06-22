@@ -121,7 +121,7 @@ export default function CreateOrUpdateTagForm({ initialValues }: any) {
         setOtherFields(true);
       } else {
         toast.error(result.error);
-        setMainLoading(true);
+        setMainLoading(false);
       }
     });
   };
