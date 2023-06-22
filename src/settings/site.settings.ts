@@ -21,10 +21,6 @@ export const siteSettings = {
   headerLinks: [],
   authorizedLinks: [
     {
-      href: Routes.profileUpdate,
-      labelTransKey: 'authorized-nav-item-profile',
-    },
-    {
       href: Routes.logout,
       labelTransKey: 'authorized-nav-item-logout',
     },
@@ -40,6 +36,11 @@ export const siteSettings = {
       {
         href: Routes.template.list,
         label: 'Template',
+        icon: 'ProductsIcon',
+      },
+      {
+        href: Routes.settings,
+        label: 'Settings',
         icon: 'ProductsIcon',
       },
     ],

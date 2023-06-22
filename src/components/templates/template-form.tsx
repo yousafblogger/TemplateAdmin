@@ -36,6 +36,7 @@ type FormValues = {
   template: any;
   Template_ID: any;
   Creater_desc: any;
+  Clips: any;
 };
 
 const defaultValues = {
@@ -61,7 +62,7 @@ export default function CreateOrUpdateTagForm({ initialValues }: any) {
   const [loadingData, setloadingData] = useState(true);
   const [template, setTemplate] = useState<any>();
   const [categoryData, setCategoryData] = useState<any>([]);
-  const [categorySelectedId, setCategorySelectedId] = useState<any>([]);
+  const [categorySelectedId, setCategorySelectedId] = useState<any>();
 
   const {
     register,
@@ -94,20 +95,22 @@ export default function CreateOrUpdateTagForm({ initialValues }: any) {
 
   const onSubmit = async (values: FormValues) => {
     setMainLoading(true);
-    let obj = {
+    let obj: any = {
       values: {
         Template_Name: values.Template_Name,
         Template_ID: values.Template_ID,
         Usage_detail: values.Usage_detail,
         Creater_name: values.Creater_name,
         Tags: values.Tags,
-        category: categorySelectedId,
+        Clips: values.Clips,
         video_link: values.VideoLink,
         poster_link: values.PoseterLink,
         Creater_desc: values.Creater_desc,
       },
     };
-    console.log(obj);
+    if (categorySelectedId) {
+      obj.values.category = categorySelectedId;
+    }
 
     PostFunction('template/create', obj).then((result) => {
       if (result.status) {
@@ -116,13 +119,11 @@ export default function CreateOrUpdateTagForm({ initialValues }: any) {
         setTemplate(result);
         router.back();
         setOtherFields(true);
-      } else if (result.error) {
+      } else {
         toast.error(result.error);
         setMainLoading(true);
       }
     });
-    console.log('dsd', values);
-    categorySelectedId;
   };
 
   const onScrapData = async (e: any) => {
@@ -240,6 +241,15 @@ export default function CreateOrUpdateTagForm({ initialValues }: any) {
               variant="outline"
               className="mb-5"
             />
+            <Input
+              {...register('Clips', {
+                value: template.Clips,
+              })}
+              disabled
+              label={t('Clips')}
+              variant="outline"
+              className="mb-5"
+            />
             <div className="mb-5">
               <Label>Category</Label>
               <Select options={categoryData} onChange={onCategoryChange} />
@@ -272,11 +282,7 @@ export default function CreateOrUpdateTagForm({ initialValues }: any) {
             </Button>
           )}
 
-          <Button loading={mmainLoading}>
-            {initialValues
-              ? t('form:button-label-update-tag')
-              : t('form:button-label-add-tag')}
-          </Button>
+          <Button loading={mmainLoading}>Add Template</Button>
         </div>
       )}
     </form>

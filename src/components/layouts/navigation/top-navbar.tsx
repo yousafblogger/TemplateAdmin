@@ -10,7 +10,7 @@ import { adminAndOwnerOnly, getAuthCredentials } from '@/utils/auth-utils';
 import LanguageSwitcher from './language-switer';
 import { Config } from '@/config';
 import { useEffect, useState } from 'react';
-// import newLogo from '../../../../public/image/SuuqueeLogo.png';
+import newLogo from '../../../../public/image/capcut.png';
 import Image from 'next/image';
 
 const Navbar = () => {
@@ -33,7 +33,7 @@ const Navbar = () => {
         <div className="ms-5 me-auto hidden md:flex">
           {/* <Logo /> */}
           {/* <img src={newLogo} /> */}
-          {/* <Image height={50} width={100} src={newLogo} className="" /> */}
+          <Image height={50} width={50} src={newLogo} className="" />
         </div>
 
         <div className="flex items-center space-s-8">

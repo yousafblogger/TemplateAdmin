@@ -191,11 +191,11 @@ export default function CreateOrUpdateCategoriesForm({
     };
     // if (initialValues.initialValues) {
     PostFunction('category/create', formData).then((result) => {
-      if (result.name) {
+      if (result.status) {
         toast.success(t('common:successfully-created'));
         setCreatingLoading(false);
         router.back();
-      } else if (result.error) {
+      } else {
         toast.error(result.error);
         setCreatingLoading(false);
       }

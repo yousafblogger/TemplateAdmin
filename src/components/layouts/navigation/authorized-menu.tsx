@@ -49,10 +49,7 @@ export default function AuthorizedMenu() {
               className="flex w-full flex-col space-y-1 rounded-t
              bg-[#fd8300] px-4 py-3 text-sm text-white"
             >
-              <span className="font-semibold capitalize">
-                {userData?.first_name + ' ' + userData?.last_name}
-              </span>
-              <span className="text-xs">{userData?.username}</span>
+              <span className="font-semibold capitalize">Admin</span>
             </li>
           </Menu.Item>
 

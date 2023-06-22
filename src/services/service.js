@@ -45,3 +45,26 @@ export function PostFunction(endPoint, values) {
       });
   });
 }
+
+//PUT Function
+
+export function PutFunction(endPoint, values) {
+  let token = localStorage.getItem('user_token');
+  return new Promise((resolve, reject) => {
+    fetch(base_url + endPoint, {
+      method: 'PUT',
+      body: JSON.stringify(values),
+      headers: {
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    })
+      .then((response) => {
+        resolve(response.json());
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}

@@ -37,6 +37,7 @@ const CategoryList = (categories: any) => {
       dataIndex: 'Template_ID',
       key: 'name',
       align: alignLeft,
+      width: 250,
     },
     {
       title: 'Template Name',
@@ -53,7 +54,7 @@ const CategoryList = (categories: any) => {
       align: alignLeft,
     },
     {
-      title: 'Template Name',
+      title: 'Category Name',
       className: 'cursor-pointer',
       dataIndex: 'category',
       key: 'name',
@@ -67,13 +68,6 @@ const CategoryList = (categories: any) => {
       key: 'name',
       align: alignLeft,
       render: (Usage_detail: any) => <span>{Usage_detail}</span>,
-    },
-    {
-      title: t('Created At'),
-      dataIndex: 'createdAt',
-      key: 'details',
-      ellipsis: true,
-      align: alignLeft,
     },
   ];
 

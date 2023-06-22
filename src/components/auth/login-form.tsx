@@ -42,7 +42,7 @@ const LoginForm = () => {
 
             setAuthCredentials(data?.token);
             toast.success('login Successfully');
-            Router.push(Routes.dashboard);
+            Router.push(Routes.template.list);
             return;
           } else if (data.error) {
             setErrorMessage(data.error);
@@ -69,33 +69,19 @@ const LoginForm = () => {
             />
             <PasswordInput
               label={t('form:input-label-password')}
-              forgotPassHelpText={t('form:input-forgot-password-label')}
               {...register('password')}
               error={t(errors?.password?.message!)}
               variant="outline"
               className="mb-4"
               forgotPageLink={Routes.forgotPassword}
             />
-            <Button className="w-full" loading={isLoading} disabled={isLoading}>
+            <Button
+              className="w-full mb-5"
+              loading={isLoading}
+              disabled={isLoading}
+            >
               {t('form:button-label-login')}
             </Button>
-
-            <div className="relative mt-8 mb-6 flex flex-col items-center justify-center text-sm text-heading sm:mt-11 sm:mb-8">
-              <hr className="w-full" />
-              <span className="absolute -top-2.5 bg-light px-2 -ms-4 start-2/4">
-                {t('common:text-or')}
-              </span>
-            </div>
-
-            <div className="text-center text-sm text-body sm:text-base">
-              {t('form:text-no-account')}{' '}
-              <Link
-                href={Routes.registerShop}
-                className="font-semibold text-accent underline transition-colors duration-200 ms-1 hover:text-accent-hover hover:no-underline focus:text-accent-700 focus:no-underline focus:outline-none"
-              >
-                {t('form:link-register-shop-owner')}
-              </Link>
-            </div>
           </>
         )}
       </Form>
