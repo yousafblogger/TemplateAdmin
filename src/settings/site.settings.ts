@@ -41,7 +41,7 @@ export const siteSettings = {
       {
         href: Routes.settings,
         label: 'Settings',
-        icon: 'ProductsIcon',
+        icon: 'RefundsIcon',
       },
     ],
     shop: [
