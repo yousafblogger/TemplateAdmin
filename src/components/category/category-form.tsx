@@ -38,6 +38,7 @@ import { toast } from 'react-toastify';
 import Modal from '@/components/ui/modal/modal';
 import CategoryFieldForm from './category-field-form';
 import FormData from 'form-data';
+import Loader from '../ui/loader/loader';
 
 export const updatedIcons = categoryIcons.map((item: any) => {
   item.label = (
@@ -130,6 +131,7 @@ type FormValues = {
   image: any;
   icon: any;
   type: any;
+  sequence: any;
 };
 
 const defaultValues = {
@@ -159,6 +161,8 @@ export default function CreateOrUpdateCategoriesForm({
   const [closeDialog, setCloseDialog] = useState<any>(false);
   const [CatId, setCatId] = useState<any>();
   var categoryForm = new FormData();
+  const [categoryData, setCategoryData] = useState<any>();
+  const [loadingData, setloadingData] = useState(true);
 
   useEffect(() => {
     if (imageFile) {
@@ -183,12 +187,28 @@ export default function CreateOrUpdateCategoriesForm({
     defaultValues: defaultValues,
   });
 
+  useEffect(() => {
+    GetFunction('/category/AllCategories').then((result: any) => {
+      const highestSequenceObject = result?.category?.reduce(
+        (prev: any, current: any) => {
+          return current.sequence > prev.sequence ? current : prev;
+        }
+      );
+
+      console.log(highestSequenceObject);
+      setCategoryData(highestSequenceObject.sequence + 1);
+
+      setloadingData(false);
+    });
+  }, []);
+
   const onSubmit = (values: FormValues) => {
     setCreatingLoading(true);
 
     let formData = {
-      values: { name: values?.name },
+      values: { name: values?.name, sequence: values.sequence },
     };
+
     // if (initialValues.initialValues) {
     PostFunction('category/create', formData).then((result) => {
       if (result.status) {
@@ -215,6 +235,7 @@ export default function CreateOrUpdateCategoriesForm({
     // });
     // }
   };
+  if (loadingData) return <Loader text={t('common:text-loading')} />;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -236,14 +257,21 @@ export default function CreateOrUpdateCategoriesForm({
             variant="outline"
             className="mb-5"
           />
-
-          <TextArea
+          <Input
+            label="Sequence"
+            {...register('sequence', {
+              value: categoryData,
+            })}
+            variant="outline"
+            className="mb-5"
+          />
+          {/* <TextArea
             disabled
             label={t('form:input-label-details')}
             {...register('details')}
             variant="outline"
             className="mb-5"
-          />
+          /> */}
         </Card>
       </div>
       <div className="mb-4 text-end">
@@ -264,7 +292,6 @@ export default function CreateOrUpdateCategoriesForm({
             : t('form:button-label-add-category')}
         </Button>
       </div>
-      =
     </form>
   );
 }
