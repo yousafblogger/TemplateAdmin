@@ -149,6 +149,8 @@ type IProps = {
 export default function CreateOrUpdateCategoriesForm({
   initialValues,
 }: IProps) {
+  console.log(initialValues);
+
   const router = useRouter();
   const { t } = useTranslation();
   const isNewTranslation = router?.query?.action === 'translate';
@@ -182,9 +184,12 @@ export default function CreateOrUpdateCategoriesForm({
 
     formState: { errors },
   } = useForm<FormValues>({
-    // shouldUnregister: true,
     //@ts-ignore
-    defaultValues: defaultValues,
+    defaultValues: initialValues
+      ? {
+          ...initialValues,
+        }
+      : defaultValues,
   });
 
   useEffect(() => {
@@ -209,31 +214,30 @@ export default function CreateOrUpdateCategoriesForm({
       values: { name: values?.name, sequence: values.sequence },
     };
 
-    // if (initialValues.initialValues) {
-    PostFunction('category/create', formData).then((result) => {
-      if (result.status) {
-        toast.success(t('common:successfully-created'));
-        setCreatingLoading(false);
-        router.back();
-      } else {
-        toast.error(result.error);
-        setCreatingLoading(false);
-      }
-    });
-    // } else {
-    let ID = initialValues?.initialValues?.id;
-    // setCreatingLoading(true);
-    // UpdatingCustomerFunction('/tax/', formVal, ID).then((result) => {
-    //   if (result.success) {
-    //     toast.success(t('common:successfully-created'));
-    //     setCreatingLoading(false);
-    //     router.back();
-    //   } else {
-    //     toast.error(t(result.msg));
-    //     setCreatingLoading(false);
-    //   }
-    // });
-    // }
+    if (initialValues) {
+      let ID = initialValues?.slug;
+      PostFunction('category/update/' + ID, formData).then((result) => {
+        if (result.status) {
+          toast.success(t('common:successfully-created'));
+          setCreatingLoading(false);
+          router.back();
+        } else {
+          toast.error(result.error);
+          setCreatingLoading(false);
+        }
+      });
+    } else {
+      PostFunction('category/create', formData).then((result) => {
+        if (result.status) {
+          toast.success(t('common:successfully-created'));
+          setCreatingLoading(false);
+          router.back();
+        } else {
+          toast.error(result.error);
+          setCreatingLoading(false);
+        }
+      });
+    }
   };
   if (loadingData) return <Loader text={t('common:text-loading')} />;
 

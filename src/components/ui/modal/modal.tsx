@@ -19,7 +19,6 @@ export default function Modal({ open, onClose, children }: any) {
         static
         open={open}
         onClose={onClose}
-        dir={dir}
       >
         <div className="min-h-full text-center md:p-5">
           <Transition.Child

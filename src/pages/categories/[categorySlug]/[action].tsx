@@ -7,22 +7,30 @@ import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useCategoryQuery } from '@/data/category';
 import { Config } from '@/config';
+import { useEffect, useState } from 'react';
+import { GetFunction } from '@/services/service';
 
 export default function UpdateCategoriesPage() {
   const { query, locale } = useRouter();
+  const [loading, setloadingData] = useState<any>(true);
+  const [category, setCategory] = useState<any>('');
   const { t } = useTranslation();
-  const {
-    category,
-    isLoading: loading,
-    error,
-  } = useCategoryQuery({
-    slug: query.categorySlug as string,
-    language:
-      query.action!.toString() === 'edit' ? locale! : Config.defaultLanguage,
-  });
+
+  useEffect(() => {
+    setloadingData(true);
+    GetFunction('/category/SingleCategory/' + query.categorySlug).then(
+      (result: any) => {
+        if (result) {
+          console.log(result);
+
+          setCategory(result.category);
+          setloadingData(false);
+        }
+      }
+    );
+  }, []);
 
   if (loading) return <Loader text={t('common:text-loading')} />;
-  if (error) return <ErrorMessage message={error.message} />;
 
   return (
     <>

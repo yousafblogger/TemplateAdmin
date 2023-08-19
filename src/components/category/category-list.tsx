@@ -1,8 +1,8 @@
 import Pagination from '@/components/ui/pagination';
-import { Table } from '@/components/ui/table';
+import { AlignType, Table } from '@/components/ui/table';
 import { getIcon } from '@/utils/get-icon';
 import * as categoriesIcon from '@/components/icons/category';
-import { SortOrder } from '@/types';
+import { Author, SortOrder } from '@/types';
 import Image from 'next/image';
 import { useTranslation } from 'next-i18next';
 import { useIsRTL } from '@/utils/locals';
@@ -59,12 +59,35 @@ const CategoryList = (categories: any) => {
       onHeaderCell: () => onHeaderClick('name'),
     },
     {
+      title: 'Sequence',
+      className: 'cursor-pointer',
+      dataIndex: 'sequence',
+      key: 'name',
+      align: alignLeft,
+      width: 150,
+      onHeaderCell: () => onHeaderClick('name'),
+    },
+    {
       title: t('Created At'),
       dataIndex: 'createdAt',
       key: 'details',
       ellipsis: true,
       align: alignLeft,
       width: 200,
+    },
+    {
+      title: (
+        <span style={{ fontFamily: 'poppins' }}>
+          {t('table:table-item-actions')}
+        </span>
+      ),
+      dataIndex: 'slug',
+      key: 'actions',
+      width: 300,
+      align: 'right' as AlignType,
+      render: (id: string, record: Author) => (
+        <LanguageSwitcher slug={id} record={record} routes={Routes?.category} />
+      ),
     },
   ];
 
