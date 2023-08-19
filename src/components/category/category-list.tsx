@@ -85,9 +85,16 @@ const CategoryList = (categories: any) => {
       key: 'actions',
       width: 300,
       align: 'right' as AlignType,
-      render: (id: string, record: Author) => (
-        <LanguageSwitcher slug={id} record={record} routes={Routes?.category} />
-      ),
+      render: (id: string, row: any) => {
+        if (row.sequence != 0)
+          return (
+            <LanguageSwitcher
+              slug={id}
+              record={row}
+              routes={Routes?.category}
+            />
+          );
+      },
     },
   ];
 
