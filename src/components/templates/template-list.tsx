@@ -1,16 +1,9 @@
-import Pagination from '@/components/ui/pagination';
 import { Table } from '@/components/ui/table';
-import { getIcon } from '@/utils/get-icon';
-import * as categoriesIcon from '@/components/icons/category';
 import { SortOrder } from '@/types';
-import Image from 'next/image';
 import { useTranslation } from 'next-i18next';
 import { useIsRTL } from '@/utils/locals';
 import { useState } from 'react';
-import TitleWithSort from '@/components/ui/title-with-sort';
-import { Category, MappedPaginatorInfo } from '@/types';
-import { Config } from '@/config';
-import Link from '@/components/ui/link';
+import { Category } from '@/types';
 import { Routes } from '@/config/routes';
 import LanguageSwitcher from '@/components/ui/lang-action/action';
 import Modal from '../ui/modal/modal';
@@ -25,7 +18,7 @@ import { BsFillBellFill } from 'react-icons/bs';
 export type IProps = {
   categories: Category[] | undefined;
 };
-const CategoryList = (categories: any) => {
+const TemplateList = (categories: any) => {
   const { t } = useTranslation();
   const rowExpandable = (record: any) => record.children?.length;
   const { alignLeft, alignRight } = useIsRTL();
@@ -93,7 +86,7 @@ const CategoryList = (categories: any) => {
       render: function Render(id: any, row: any) {
         const onIConClick = () => {
           setModalViiew(true);
-          setTempId(row.Template_ID);
+          setTempId(row._id);
         };
 
         return (
@@ -106,6 +99,29 @@ const CategoryList = (categories: any) => {
             </div>
           </div>
         );
+      },
+    },
+  
+    //DELETE AND EDIT
+    {
+      title: (
+        <span style={{ fontFamily: 'poppins' }}>
+          {t('table:table-item-actions')}
+        </span>
+      ),
+      dataIndex: 'slug',
+      key: 'actions',
+      width: 300,
+      align: 'right' as AlignType,
+      render: (id: string, row: any) => {
+          return (
+            <LanguageSwitcher
+              deleteModalView="DELETE_CATEGORY"
+              slug={id}
+              record={row}
+              routes={Routes?.category}
+            />
+          );
       },
     },
   ];
@@ -187,4 +203,4 @@ const CategoryList = (categories: any) => {
   );
 };
 
-export default CategoryList;
+export default TemplateList;

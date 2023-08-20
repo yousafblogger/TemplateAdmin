@@ -4,20 +4,14 @@ import Layout from '@/components/layouts/admin';
 import Search from '@/components/common/search';
 import LinkButton from '@/components/ui/link-button';
 import { useEffect, useState } from 'react';
-import ErrorMessage from '@/components/ui/error-message';
 import Loader from '@/components/ui/loader/loader';
-import { SortOrder } from '@/types';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { Routes } from '@/config/routes';
-import TypeFilter from '@/components/category/type-filter';
-import { adminOnly } from '@/utils/auth-utils';
-import { useCategoriesQuery } from '@/data/category';
 import { useRouter } from 'next/router';
-import { Config } from '@/config';
 import { GetFunction } from '@/services/service';
 
-export default function Categories() {
+export default function Templates() {
   const { locale } = useRouter();
   const { t } = useTranslation();
   const [categoryData, setCategoryData] = useState([]);
@@ -28,23 +22,34 @@ export default function Categories() {
     GetFunction('/template/AllTemplates').then((result: any) => {
       setCategoryData(result.templates);
       setloadingData(false);
+      console.log(categoryData);
     });
   }, []);
 
   if (loadingData) return <Loader text={t('common:text-loading')} />;
 
-  function handleSearch({ searchText }: { searchText: string }) {}
+  function handleSearch({ searchText }: { searchText: string }) {
+    //Filter the data based on search text
+    const filteredData = categoryData.filter(
+      (item) =>
+        item?.Template_Name?.includes(searchText) ||
+        item?.Creater_name?.includes(searchText)
+    );
+    setCategoryData(filteredData);
+  }
 
   return (
     <>
       <Card className="mb-8 flex flex-col">
         <div className="flex w-full flex-col items-center md:flex-row">
-          <div className="mb-4 md:mb-0 md:w-1/4">
-            <h1 className="text-xl font-semibold text-heading">Templates</h1>
+          <div className="mb-4 flex flex-row gap-1 md:mb-0 md:w-1/4">
+            <h1 className="text-xl font-semibold text-heading">
+              {categoryData?.length} - Templates
+            </h1>
           </div>
 
           <div className="flex w-full flex-col items-center space-y-4 ms-auto md:flex-row md:space-y-0 xl:w-3/4">
-            <Search onSearch={handleSearch} />
+            <Search onChange={handleSearch} />
 
             <LinkButton
               href={`${Routes.template.create}`}
@@ -65,7 +70,7 @@ export default function Categories() {
   );
 }
 
-Categories.Layout = Layout;
+Templates.Layout = Layout;
 
 export const getStaticProps = async ({ locale }: any) => ({
   props: {
