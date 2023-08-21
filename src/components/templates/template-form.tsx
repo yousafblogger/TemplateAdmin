@@ -120,7 +120,7 @@ export default function CreateOrUpdateTagForm({ initialValues }: any) {
       obj.values.category = categorySelectedId;
     }
     console.log(obj);
-    return;
+    
 if(initialValues){
   let ID = initialValues?._id;
   PutFunction('template/update/'+ID, obj).then((result) => {
