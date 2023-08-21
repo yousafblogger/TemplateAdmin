@@ -109,17 +109,18 @@ const TemplateList = (categories: any) => {
           {t('table:table-item-actions')}
         </span>
       ),
-      dataIndex: 'slug',
+      dataIndex: '_id',
       key: 'actions',
       width: 300,
       align: 'right' as AlignType,
       render: (id: string, row: any) => {
           return (
             <LanguageSwitcher
-              deleteModalView="DELETE_CATEGORY"
+              deleteModalView="DELETE_TAG"
+              deleteAPIendPoint={`/template/delete/${id}`}
               slug={id}
               record={row}
-              routes={Routes?.category}
+              routes={Routes?.template}
             />
           );
       },
@@ -134,7 +135,7 @@ const TemplateList = (categories: any) => {
       included_segments: ['All'], // You can specify target segments here
       data: { template_id: TempId }, // Pass the template ID as data
     };
-    console.log(process.env.NEXT_PUBLIC_APP_KEY);
+    console.log(notificationData);
     fetch('https://onesignal.com/api/v1/notifications', {
       method: 'POST',
       headers: {

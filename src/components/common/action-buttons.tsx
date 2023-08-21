@@ -9,6 +9,14 @@ import { CheckMarkCircle } from '@/components/icons/checkmark-circle';
 import { useModalAction } from '@/components/ui/modal/modal.context';
 import { CloseFillIcon } from '@/components/icons/close-fill';
 import { AdminIcon } from '@/components/icons/admin-icon';
+import { useState } from 'react';
+import Button from '../ui/button';
+import Modal from '../ui/modal/modal';
+import Card from './card';
+import cn from 'classnames';
+import { DeleteFunction } from '@/services/service';
+import { toast } from 'react-toastify';
+import router from 'next/router';
 
 type Props = {
   id: string;
@@ -25,12 +33,14 @@ type Props = {
   showMakeAdminButton?: boolean;
   showReplyQuestion?: boolean;
   customLocale?: string;
+  deleteAPIendPoint:any
 };
 
 const ActionButtons = ({
   id,
   editModalView,
   deleteModalView,
+  deleteAPIendPoint,
   editUrl,
   detailsUrl,
   userStatus = false,
@@ -45,10 +55,29 @@ const ActionButtons = ({
 }: Props) => {
   const { t } = useTranslation();
   const { openModal } = useModalAction();
+  const [openDialog, setOpenDialog] = useState<any>(false);
+  const [loading, setLoading] = useState<any>(false);
 
   function handleDelete() {
-    openModal(deleteModalView, id);
+    // openModal(deleteModalView, id);
+    setOpenDialog(true);
+
   }
+  const onDeletePress = () => {
+   setLoading(true);
+   DeleteFunction(deleteAPIendPoint).then((result) => {
+          if (result.status===true) {
+            toast.success(t('common:successfully-deleted'));
+            setLoading(false);
+            setOpenDialog(false);
+            router.reload();
+          } else {
+            toast.error(t(result.msg));
+            setLoading(false);
+          }
+        });
+  };
+
 
   function handleEditModal() {
     openModal(editModalView, id);
@@ -120,6 +149,52 @@ const ActionButtons = ({
           <CheckMarkCircle width={20} />
         </button>
       )}
+
+<Modal
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        style={{ width: '45%' }}
+      >
+        <Card className="mt-4" style={{ width: 400 }}>
+          <div className="m-auto w-full">
+            <div className="h-full w-full text-center">
+              <div className="flex h-full flex-col justify-between">
+                <TrashIcon className="m-auto mt-4 h-12 w-12 text-accent" />
+                <p className="mt-4 text-xl font-bold text-heading">Delete</p>
+                <p className="py-2 px-6 leading-relaxed text-body-dark dark:text-muted">
+                  Are you sure, you want to delete?
+                </p>
+                <div className="mt-8 flex w-full items-center justify-between space-s-4">
+                  <div className="w-1/2">
+                    <Button
+                      onClick={() => setOpenDialog(false)}
+                      variant="custom"
+                      className={cn(
+                        'w-full rounded bg-accent py-2 px-4 text-center text-base font-semibold text-light shadow-md transition duration-200 ease-in hover:bg-accent-hover focus:bg-accent-hover focus:outline-none'
+                      )}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                  <div className="w-1/2">
+                    <Button
+                      onClick={onDeletePress}
+                      loading={loading}
+                      variant="custom"
+                      className={cn(
+                        'w-full rounded bg-red-600 py-2 px-4 text-center text-base font-semibold text-light shadow-md transition duration-200 ease-in hover:bg-red-700 focus:bg-red-700 focus:outline-none'
+                        // deleteBtnClassName
+                      )}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Card>
+      </Modal>
       {deleteModalView && (
         <button
           onClick={handleDelete}
@@ -129,6 +204,7 @@ const ActionButtons = ({
           <TrashIcon width={16} />
         </button>
       )}
+
       {editModalView && (
         <button
           onClick={handleEditModal}

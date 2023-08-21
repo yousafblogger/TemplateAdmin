@@ -4,22 +4,36 @@ import ErrorMessage from '@/components/ui/error-message';
 import Loader from '@/components/ui/loader/loader';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import CreateOrUpdateTagForm from '@/components/tag/tag-form';
+import CreateOrUpdateTagForm from '@/components/templates/template-form';
 import { adminOnly } from '@/utils/auth-utils';
 import { useTagQuery } from '@/data/tag';
 import { Config } from '@/config';
+import { useEffect, useState } from 'react';
+import { GetFunction } from '@/services/service';
 
 export default function UpdateTagPage() {
   const { query, locale } = useRouter();
+  const [template,setTemplate]=useState<any>('');
+  const [loading, setloadingData] = useState<any>(true);
   const { t } = useTranslation();
-  const { tag, loading, error } = useTagQuery({
-    slug: query.tagSlug as string,
-    language:
-      query.action!.toString() === 'edit' ? locale! : Config.defaultLanguage,
-  });
-
+  // const { tag, loading, error } = useTagQuery({
+  //   slug: query.tagSlug as string,
+  //   language:
+  //     query.action!.toString() === 'edit' ? locale! : Config.defaultLanguage,
+  // });
+  useEffect(() => {
+    setloadingData(true);
+    GetFunction('/template/SingleTemplate/' + query.templateSlug).then(
+      (result: any) => {
+        console.log(result);
+        if (result) {
+          setTemplate(result.template);
+          setloadingData(false);
+        }
+      }
+    );
+  }, []);
   if (loading) return <Loader text={t('common:text-loading')} />;
-  if (error) return <ErrorMessage message={error.message} />;
 
   return (
     <>
@@ -29,7 +43,7 @@ export default function UpdateTagPage() {
         </h1>
       </div>
 
-      <CreateOrUpdateTagForm initialValues={tag} />
+      <CreateOrUpdateTagForm initialValues={template} />
     </>
   );
 }

@@ -16,6 +16,7 @@ import { useCategoriesQuery } from '@/data/category';
 import { useRouter } from 'next/router';
 import { Config } from '@/config';
 import { GetFunction } from '@/services/service';
+import Button from '@/components/ui/button';
 
 export default function Categories() {
   const { locale } = useRouter();
@@ -37,21 +38,28 @@ export default function Categories() {
   // });
   const [categoryData, setCategoryData] = useState([]);
   const [loadingData, setloadingData] = useState(false);
+  const [SearchData, setSearchData] = useState([]);
 
   useEffect(() => {
     setloadingData(true);
     GetFunction('/category/AllCategories').then((result: any) => {
       setCategoryData(result.category);
+      setSearchData(result.category)
       setloadingData(false);
     });
   }, []);
 
   if (loadingData) return <Loader text={t('common:text-loading')} />;
-
   function handleSearch({ searchText }: { searchText: string }) {
-    // setSearchTerm(searchText);
-    // setPage(1);
+    //Filter the data based on search text
+    const filteredData = categoryData.filter((item) =>
+      item?.name?.toLowerCase().includes(searchText.toLowerCase())
+    );
+    setCategoryData(filteredData);
   }
+  const Reset = () => {
+    setCategoryData(SearchData);
+  };
 
   return (
     <>
@@ -64,8 +72,10 @@ export default function Categories() {
           </div>
 
           <div className="flex w-full flex-col items-center space-y-4 ms-auto md:flex-row md:space-y-0 xl:w-3/4">
-            <Search onSearch={handleSearch} />
-
+            <Search onChange={handleSearch} />
+            <Button onClick={Reset} className="h-12 w-full md:w-auto md:ms-6">
+              <span className="block md:hidden xl:block">Reset</span>
+            </Button>
             <LinkButton
               href={`${Routes.category.create}`}
               className="h-12 w-full md:w-auto md:ms-6"

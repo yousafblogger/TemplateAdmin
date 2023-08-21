@@ -1,23 +1,13 @@
 import Input from '@/components/ui/input';
-import { Control, FieldErrors, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import Button from '@/components/ui/button';
-import TextArea from '@/components/ui/text-area';
 import Label from '@/components/ui/label';
 import Card from '@/components/common/card';
 import Description from '@/components/ui/description';
-import * as categoriesIcon from '@/components/icons/category';
-import { getIcon } from '@/utils/get-icon';
 import { useRouter } from 'next/router';
-import { getErrorMessage } from '@/utils/form-error';
-import ValidationError from '@/components/ui/form-validation-error';
 import { useTranslation } from 'next-i18next';
-import FileInput from '@/components/ui/file-input';
-import SelectInput from '@/components/ui/select-input';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { useCreateTagMutation, useUpdateTagMutation } from '@/data/tag';
-import { useTypesQuery } from '@/data/type';
 import { useEffect, useState } from 'react';
-import { GetFunction, PostFunction } from '@/services/service';
+import { GetFunction, PostFunction, PutFunction } from '@/services/service';
 import { toast } from 'react-toastify';
 import Select from '../ui/select/select';
 import Loader from '../ui/loader/loader';
@@ -25,6 +15,7 @@ import Loader from '../ui/loader/loader';
 type FormValues = {
   Template_Name: string;
   Creater_name: string;
+  category:any;
   Usage_detail: string;
   VideoLink: string;
   Tags: string;
@@ -40,16 +31,21 @@ type FormValues = {
 };
 
 const defaultValues = {
-  //   image: '',
-  //   Template_Name: '',
-  //   Creater_name: '',
-  //   Usage_detail: '',
-  //   VideoLink: '',
-  //   Tags: '',
-  //   PoseterLink: '',
-  //   details: '',
-  //   icon: '',
-  //   type: '',
+  // Template_Name: "",
+  // Creater_name: "",
+  // category:"",
+  // Usage_detail: "",
+  // VideoLink: "",
+  // Tags: "",
+  // PoseterLink: "",
+  // type: "",
+  // details: "",
+  // image: "",
+  // icon: "",
+  // template: "",
+  // Template_ID: "",
+  // Creater_desc: "",
+  // Clips: "",
 };
 
 export default function CreateOrUpdateTagForm({ initialValues }: any) {
@@ -60,7 +56,7 @@ export default function CreateOrUpdateTagForm({ initialValues }: any) {
   const [mmainLoading, setMainLoading] = useState(false);
   const [otherFields, setOtherFields] = useState(false);
   const [loadingData, setloadingData] = useState(true);
-  const [template, setTemplate] = useState<any>();
+  const [template, setTemplate] = useState<any>(initialValues);
   const [categoryData, setCategoryData] = useState<any>([]);
   const [categorySelectedId, setCategorySelectedId] = useState<any>();
 
@@ -71,7 +67,12 @@ export default function CreateOrUpdateTagForm({ initialValues }: any) {
     formState: { errors },
   } = useForm<FormValues>({
     //@ts-ignore
-    defaultValues: initialValues ? defaultValues : defaultValues,
+     //@ts-ignore
+     defaultValues: initialValues
+     ? {
+         ...initialValues,
+       }
+     : defaultValues,
   });
 
   useEffect(() => {
@@ -85,8 +86,13 @@ export default function CreateOrUpdateTagForm({ initialValues }: any) {
         };
       });
       setCategoryData(ordersData);
+      if(initialValues){
+        setOtherFields(true);
+        setCreatingLoading(false);
+      }
       setloadingData(false);
     });
+  
   }, []);
 
   const onTemplateIdChange = (e: any) => {
@@ -106,24 +112,43 @@ export default function CreateOrUpdateTagForm({ initialValues }: any) {
         video_link: values.VideoLink,
         poster_link: values.PoseterLink,
         Creater_desc: values.Creater_desc,
+        category:values.category?._id
       },
     };
+    
     if (categorySelectedId) {
       obj.values.category = categorySelectedId;
     }
-
-    PostFunction('template/create', obj).then((result) => {
-      if (result.status) {
-        toast.success('Successfully Craeted Template');
-        setMainLoading(false);
-        setTemplate(result);
-        router.back();
-        setOtherFields(true);
-      } else {
-        toast.error(result.error);
-        setMainLoading(true);
-      }
-    });
+    console.log(obj);
+    return;
+if(initialValues){
+  let ID = initialValues?._id;
+  PutFunction('template/update/'+ID, obj).then((result) => {
+    if (result.status) {
+      toast.success('Successfully Updated Template');
+      setMainLoading(false);
+      router.back();
+      setOtherFields(true);
+    } else {
+      toast.error(result.error);
+      setMainLoading(true);
+    }
+  });
+}else{
+  PostFunction('template/create', obj).then((result) => {
+    if (result.status) {
+      toast.success('Successfully Craeted Template');
+      setMainLoading(false);
+      setTemplate(result);
+      router.back();
+      setOtherFields(true);
+    } else {
+      toast.error(result.error);
+      setMainLoading(true);
+    }
+  });
+}
+    
   };
 
   const onScrapData = async (e: any) => {
@@ -252,16 +277,25 @@ export default function CreateOrUpdateTagForm({ initialValues }: any) {
             />
             <div className="mb-5">
               <Label>Category</Label>
-              <Select options={categoryData} onChange={onCategoryChange} />
+              <Select 
+               {...register('category')}
+              options={categoryData} 
+              value={template?.category?._id}  
+              defaultInputValue={template?.category?._id}
+              onChange={onCategoryChange} />
             </div>
             <Input
-              {...register('VideoLink')}
+              {...register('VideoLink',{
+                value:template?.video_link
+              })}
               label={t('Video Link')}
               variant="outline"
               className="mb-5"
             />
             <Input
-              {...register('PoseterLink')}
+              {...register('PoseterLink',{
+                value:template?.poster_link
+              })}
               label={t('Poster Link')}
               variant="outline"
               className="mb-5"
@@ -271,8 +305,7 @@ export default function CreateOrUpdateTagForm({ initialValues }: any) {
       )}
       {otherFields && (
         <div className="mb-4 text-end">
-          {initialValues && (
-            <Button
+          <Button
               variant="outline"
               onClick={router.back}
               className="me-4"
@@ -280,9 +313,10 @@ export default function CreateOrUpdateTagForm({ initialValues }: any) {
             >
               {t('form:button-label-back')}
             </Button>
-          )}
+          {initialValues ?(
+            <Button loading={mmainLoading}>Update</Button>
+          ):<Button loading={mmainLoading}>Add Template</Button>}
 
-          <Button loading={mmainLoading}>Add Template</Button>
         </div>
       )}
     </form>

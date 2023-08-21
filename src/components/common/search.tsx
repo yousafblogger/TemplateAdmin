@@ -27,8 +27,6 @@ type SearchValue = {
   searchText: string;
 };
 
-// ... (imports and type definitions)
-
 const Search: React.FC<SearchProps> = ({
   className,
   onChange,
@@ -39,7 +37,9 @@ const Search: React.FC<SearchProps> = ({
 }) => {
   const {
     register,
+    handleSubmit,
     watch,
+    reset,
 
     formState: { errors },
   } = useForm<SearchValue>({
@@ -49,6 +49,12 @@ const Search: React.FC<SearchProps> = ({
   });
   const searchText = watch('searchText');
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (!searchText) {
+      onChange({ searchText: '' });
+    }
+  }, [searchText]);
 
   const rootClassName = cn(
     classes.root,
@@ -63,11 +69,16 @@ const Search: React.FC<SearchProps> = ({
     inputClassName
   );
 
+  function clear() {
+    reset();
+    onChange({ searchText: '' });
+  }
   return (
     <form
       noValidate
       role="search"
       className={cn('relative flex w-full items-center', className)}
+      onSubmit={handleSubmit(onChange)}
     >
       <label htmlFor="search" className="sr-only">
         {t('form:input-label-search')}
@@ -83,17 +94,13 @@ const Search: React.FC<SearchProps> = ({
         placeholder={t('form:input-placeholder-search')}
         aria-label="Search"
         autoComplete="off"
-        onChange={(event) => {
-          const value = event.target.value;
-          onChange({ searchText: value }); // Call the provided onChange event handler
-        }}
         {...rest}
       />
       {errors.searchText && <p>{errors.searchText.message}</p>}
       {!!searchText && (
         <button
           type="button"
-          onClick={() => onChange({ searchText: '' })} // Call the provided onChange event handler
+          onClick={clear}
           className="end-1 absolute p-2 text-body outline-none focus:outline-none active:outline-none"
         >
           <CloseIcon className="h-5 w-5" />
@@ -104,4 +111,3 @@ const Search: React.FC<SearchProps> = ({
 };
 
 export default Search;
-

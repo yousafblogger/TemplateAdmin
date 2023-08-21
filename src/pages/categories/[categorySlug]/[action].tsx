@@ -21,8 +21,6 @@ export default function UpdateCategoriesPage() {
     GetFunction('/category/SingleCategory/' + query.categorySlug).then(
       (result: any) => {
         if (result) {
-          console.log(result);
-
           setCategory(result.category);
           setloadingData(false);
         }

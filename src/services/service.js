@@ -46,6 +46,26 @@ export function PostFunction(endPoint, values) {
   });
 }
 
+export function DeleteFunction(endPoint) {
+  let token = localStorage.getItem('user_token');
+  return new Promise((resolve, reject) => {
+    fetch(base_url + endPoint, {
+      method: 'DELETE',
+      headers: {
+        Authorization: 'Bearer ' + token,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    })
+      .then((response) => {
+        resolve(response.json());
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
 //PUT Function
 
 export function PutFunction(endPoint, values) {

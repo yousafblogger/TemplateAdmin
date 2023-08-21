@@ -8,6 +8,7 @@ export type LanguageSwitcherProps = {
   record: any;
   slug: string;
   deleteModalView?: string | any;
+  deleteAPIendPoint:string |any;
   routes: any;
   className?: string | undefined;
 };
@@ -16,6 +17,7 @@ export default function LanguageSwitcher({
   record,
   slug,
   deleteModalView,
+  deleteAPIendPoint,
   routes,
   className,
 }: LanguageSwitcherProps) {
@@ -35,9 +37,10 @@ export default function LanguageSwitcher({
         />
       ) : (
         <ActionButtons
-          id={record?.id}
+          id={record?._id}
           editUrl={routes.editWithoutLang(slug, shop)}
           deleteModalView={deleteModalView}
+          deleteAPIendPoint={deleteAPIendPoint}
         />
       )}
     </>
