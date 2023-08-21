@@ -281,7 +281,7 @@ if(initialValues){
                {...register('category')}
               options={categoryData} 
               value={template?.category?._id}  
-              defaultInputValue={template?.category?._id}
+              defaultInputValue={template?.category?.name}
               onChange={onCategoryChange} />
             </div>
             <Input
