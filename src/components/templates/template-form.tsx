@@ -15,7 +15,7 @@ import Loader from '../ui/loader/loader';
 type FormValues = {
   Template_Name: string;
   Creater_name: string;
-  category:any;
+  category: any;
   Usage_detail: string;
   VideoLink: string;
   Tags: string;
@@ -48,7 +48,7 @@ const defaultValues = {
   // Clips: "",
 };
 
-export default function CreateOrUpdateTagForm({ initialValues }: any) {
+export default function CreateOrUpdateTagForm(initialValues: any) {
   const router = useRouter();
   const { t } = useTranslation();
   const [templateId, setTemplateId] = useState();
@@ -56,9 +56,10 @@ export default function CreateOrUpdateTagForm({ initialValues }: any) {
   const [mmainLoading, setMainLoading] = useState(false);
   const [otherFields, setOtherFields] = useState(false);
   const [loadingData, setloadingData] = useState(true);
-  const [template, setTemplate] = useState<any>(initialValues);
+  const [template, setTemplate] = useState<any>(initialValues?.initialValues);
   const [categoryData, setCategoryData] = useState<any>([]);
   const [categorySelectedId, setCategorySelectedId] = useState<any>();
+  console.log(initialValues);
 
   const {
     register,
@@ -67,12 +68,12 @@ export default function CreateOrUpdateTagForm({ initialValues }: any) {
     formState: { errors },
   } = useForm<FormValues>({
     //@ts-ignore
-     //@ts-ignore
-     defaultValues: initialValues
-     ? {
-         ...initialValues,
-       }
-     : defaultValues,
+    //@ts-ignore
+    defaultValues: initialValues
+      ? {
+          ...initialValues,
+        }
+      : defaultValues,
   });
 
   useEffect(() => {
@@ -86,14 +87,15 @@ export default function CreateOrUpdateTagForm({ initialValues }: any) {
         };
       });
       setCategoryData(ordersData);
-      if(initialValues){
-        setOtherFields(true);
-        setCreatingLoading(false);
-      }
+
       setloadingData(false);
     });
-  
   }, []);
+
+  // if (initialValues) {
+  //   setOtherFields(true);
+  //   setCreatingLoading(false);
+  // }
 
   const onTemplateIdChange = (e: any) => {
     setTemplateId(e.target.value);
@@ -112,43 +114,42 @@ export default function CreateOrUpdateTagForm({ initialValues }: any) {
         video_link: values.VideoLink,
         poster_link: values.PoseterLink,
         Creater_desc: values.Creater_desc,
-        category:values.category?._id
+        category: values.category?._id,
       },
     };
-    
+
     if (categorySelectedId) {
       obj.values.category = categorySelectedId;
     }
     console.log(obj);
-    
-if(initialValues){
-  let ID = initialValues?._id;
-  PutFunction('template/update/'+ID, obj).then((result) => {
-    if (result.status) {
-      toast.success('Successfully Updated Template');
-      setMainLoading(false);
-      router.back();
-      setOtherFields(true);
+
+    if (initialValues) {
+      let ID = initialValues?._id;
+      PutFunction('template/update/' + ID, obj).then((result) => {
+        if (result.status) {
+          toast.success('Successfully Updated Template');
+          setMainLoading(false);
+          router.back();
+          setOtherFields(true);
+        } else {
+          toast.error(result.error);
+          setMainLoading(true);
+        }
+      });
     } else {
-      toast.error(result.error);
-      setMainLoading(true);
+      PostFunction('template/create', obj).then((result) => {
+        if (result.status) {
+          toast.success('Successfully Craeted Template');
+          setMainLoading(false);
+          setTemplate(result);
+          router.back();
+          setOtherFields(true);
+        } else {
+          toast.error(result.error);
+          setMainLoading(true);
+        }
+      });
     }
-  });
-}else{
-  PostFunction('template/create', obj).then((result) => {
-    if (result.status) {
-      toast.success('Successfully Craeted Template');
-      setMainLoading(false);
-      setTemplate(result);
-      router.back();
-      setOtherFields(true);
-    } else {
-      toast.error(result.error);
-      setMainLoading(true);
-    }
-  });
-}
-    
   };
 
   const onScrapData = async (e: any) => {
@@ -176,10 +177,11 @@ if(initialValues){
   };
 
   if (loadingData) return <Loader text={t('common:text-loading')} />;
+  console.log(initialValues);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      {!otherFields && (
+      {!initialValues?.otherFiield && (
         <div className="my-5 flex flex-wrap sm:my-8">
           <Description
             title={t('form:input-label-description')}
@@ -205,7 +207,7 @@ if(initialValues){
           </Card>
         </div>
       )}
-      {otherFields && (
+      {initialValues?.otherFiield && (
         <div className="my-5 flex flex-wrap sm:my-8">
           <Description
             title={t('Template Information')}
@@ -277,24 +279,25 @@ if(initialValues){
             />
             <div className="mb-5">
               <Label>Category</Label>
-              <Select 
-               {...register('category')}
-              options={categoryData} 
-              value={template?.category?._id}  
-              defaultInputValue={template?.category?.name}
-              onChange={onCategoryChange} />
+              <Select
+                {...register('category')}
+                options={categoryData}
+                value={template?.category?._id}
+                defaultInputValue={template?.category?.name}
+                onChange={onCategoryChange}
+              />
             </div>
             <Input
-              {...register('VideoLink',{
-                value:template?.video_link
+              {...register('VideoLink', {
+                value: template?.video_link,
               })}
               label={t('Video Link')}
               variant="outline"
               className="mb-5"
             />
             <Input
-              {...register('PoseterLink',{
-                value:template?.poster_link
+              {...register('PoseterLink', {
+                value: template?.poster_link,
               })}
               label={t('Poster Link')}
               variant="outline"
@@ -306,17 +309,18 @@ if(initialValues){
       {otherFields && (
         <div className="mb-4 text-end">
           <Button
-              variant="outline"
-              onClick={router.back}
-              className="me-4"
-              type="button"
-            >
-              {t('form:button-label-back')}
-            </Button>
-          {initialValues ?(
+            variant="outline"
+            onClick={router.back}
+            className="me-4"
+            type="button"
+          >
+            {t('form:button-label-back')}
+          </Button>
+          {initialValues ? (
             <Button loading={mmainLoading}>Update</Button>
-          ):<Button loading={mmainLoading}>Add Template</Button>}
-
+          ) : (
+            <Button loading={mmainLoading}>Add Template</Button>
+          )}
         </div>
       )}
     </form>

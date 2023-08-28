@@ -13,7 +13,7 @@ import { GetFunction } from '@/services/service';
 
 export default function UpdateTagPage() {
   const { query, locale } = useRouter();
-  const [template,setTemplate]=useState<any>('');
+  const [template, setTemplate] = useState<any>('');
   const [loading, setloadingData] = useState<any>(true);
   const { t } = useTranslation();
   // const { tag, loading, error } = useTagQuery({
@@ -22,7 +22,6 @@ export default function UpdateTagPage() {
   //     query.action!.toString() === 'edit' ? locale! : Config.defaultLanguage,
   // });
   useEffect(() => {
-    setloadingData(true);
     GetFunction('/template/SingleTemplate/' + query.templateSlug).then(
       (result: any) => {
         console.log(result);
@@ -43,13 +42,13 @@ export default function UpdateTagPage() {
         </h1>
       </div>
 
-      <CreateOrUpdateTagForm initialValues={template} />
+      <CreateOrUpdateTagForm otherFiield={true} initialValues={template} />
     </>
   );
 }
-UpdateTagPage.authenticate = {
-  permissions: adminOnly,
-};
+// UpdateTagPage.authenticate = {
+//   permissions: adminOnly,
+// };
 UpdateTagPage.Layout = Layout;
 
 export const getServerSideProps = async ({ locale }: any) => ({
