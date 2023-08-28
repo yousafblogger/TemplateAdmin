@@ -58,7 +58,7 @@ export default function CreateOrUpdateTagForm(initialValues: any) {
   const [loadingData, setloadingData] = useState(true);
   const [template, setTemplate] = useState<any>(initialValues?.initialValues);
   const [categoryData, setCategoryData] = useState<any>([]);
-  const [categorySelectedId, setCategorySelectedId] = useState<any>();
+  const [categorySelectedId, setCategorySelectedId] = useState<any>(initialValues?.initialValues?.category?._id);
   console.log(initialValues);
 
   const {
@@ -86,6 +86,14 @@ export default function CreateOrUpdateTagForm(initialValues: any) {
           label: data.name,
         };
       });
+      // Add an object with "select" values
+      ordersData?.unshift({
+        key: -1, // Use a unique key for the special "select" option
+        id: '', // Use an appropriate value for the "id" property
+        value: '', // Set the value to an empty string
+        label: 'Select', // Set the label to "Select"
+      });
+
       setCategoryData(ordersData);
 
       setloadingData(false);
@@ -121,10 +129,9 @@ export default function CreateOrUpdateTagForm(initialValues: any) {
     if (categorySelectedId) {
       obj.values.category = categorySelectedId;
     }
-    console.log(obj);
-
+  
     if (initialValues) {
-      let ID = initialValues?._id;
+      let ID = initialValues.initialValues?._id;
       PutFunction('template/update/' + ID, obj).then((result) => {
         if (result.status) {
           toast.success('Successfully Updated Template');
@@ -163,7 +170,6 @@ export default function CreateOrUpdateTagForm(initialValues: any) {
         toast.success('Successfully Fetched Data');
         setCreatingLoading(false);
         setTemplate(result);
-
         setOtherFields(true);
       } else if (result.error) {
         toast.error(result.error);
@@ -181,7 +187,7 @@ export default function CreateOrUpdateTagForm(initialValues: any) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      {!initialValues?.otherFiield && (
+      {!initialValues?.otherFiield && !otherFields && (
         <div className="my-5 flex flex-wrap sm:my-8">
           <Description
             title={t('form:input-label-description')}
@@ -207,7 +213,7 @@ export default function CreateOrUpdateTagForm(initialValues: any) {
           </Card>
         </div>
       )}
-      {initialValues?.otherFiield && (
+      {otherFields || initialValues?.otherFiield ? (
         <div className="my-5 flex flex-wrap sm:my-8">
           <Description
             title={t('Template Information')}
@@ -282,8 +288,7 @@ export default function CreateOrUpdateTagForm(initialValues: any) {
               <Select
                 {...register('category')}
                 options={categoryData}
-                value={template?.category?._id}
-                defaultInputValue={template?.category?.name}
+                value={categoryData.find((option:any) => option.id === categorySelectedId)} // Pre-select based on category ID
                 onChange={onCategoryChange}
               />
             </div>
@@ -297,7 +302,9 @@ export default function CreateOrUpdateTagForm(initialValues: any) {
             />
             <Input
               {...register('PoseterLink', {
-                value: template?.poster_link,
+                value: template?.poster_link
+                  ? template.poster_link
+                  : `https://capcut-templates.com/wp-content/uploads/${templateId}.jpeg`,
               })}
               label={t('Poster Link')}
               variant="outline"
@@ -305,8 +312,10 @@ export default function CreateOrUpdateTagForm(initialValues: any) {
             />
           </Card>
         </div>
+      ) : (
+        ''
       )}
-      {otherFields && (
+      {otherFields || initialValues.otherFiield ? (
         <div className="mb-4 text-end">
           <Button
             variant="outline"
@@ -316,12 +325,14 @@ export default function CreateOrUpdateTagForm(initialValues: any) {
           >
             {t('form:button-label-back')}
           </Button>
-          {initialValues ? (
+          {initialValues.otherFiield ? (
             <Button loading={mmainLoading}>Update</Button>
           ) : (
             <Button loading={mmainLoading}>Add Template</Button>
           )}
         </div>
+      ) : (
+        ''
       )}
     </form>
   );

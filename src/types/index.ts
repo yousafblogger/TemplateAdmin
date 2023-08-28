@@ -161,13 +161,13 @@ export interface CreateTypeInput {
   banner_text?: string;
 }
 
-export interface Category {
+export interface Template {
   id: string;
   name: string;
   slug: string;
   translated_languages: string[];
   parent?: number;
-  children: Category[];
+  children: Template[];
   details?: string;
   image?: Attachment;
   icon?: string;

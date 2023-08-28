@@ -1,16 +1,9 @@
-import Pagination from '@/components/ui/pagination';
 import { AlignType, Table } from '@/components/ui/table';
-import { getIcon } from '@/utils/get-icon';
-import * as categoriesIcon from '@/components/icons/category';
-import { Author, SortOrder } from '@/types';
-import Image from 'next/image';
+import { SortOrder } from '@/types';
 import { useTranslation } from 'next-i18next';
 import { useIsRTL } from '@/utils/locals';
 import { useState } from 'react';
-import TitleWithSort from '@/components/ui/title-with-sort';
-import { Category, MappedPaginatorInfo } from '@/types';
-import { Config } from '@/config';
-import Link from '@/components/ui/link';
+import { Category } from '@/types';
 import { Routes } from '@/config/routes';
 import LanguageSwitcher from '@/components/ui/lang-action/action';
 
@@ -59,6 +52,15 @@ const CategoryList = (categories: any) => {
       onHeaderCell: () => onHeaderClick('name'),
     },
     {
+      title: 'No Of Templates',
+      className: 'cursor-pointer',
+      dataIndex: 'Template_Count',
+      key: 'Template_Count',
+      align: alignLeft,
+      width: 200,
+      onHeaderCell: () => onHeaderClick('Template_Count'),
+    },
+    {
       title: 'Sequence',
       className: 'cursor-pointer',
       dataIndex: 'sequence',
@@ -73,7 +75,7 @@ const CategoryList = (categories: any) => {
       key: 'details',
       ellipsis: true,
       align: alignLeft,
-      width: 200,
+      width: 150,
     },
     {
       title: (
@@ -83,7 +85,7 @@ const CategoryList = (categories: any) => {
       ),
       dataIndex: 'slug',
       key: 'actions',
-      width: 300,
+      width: 200,
       align: 'right' as AlignType,
       render: (id: string, row: any) => {
         if (row.sequence != 0)

@@ -1,5 +1,5 @@
 import { Table } from '@/components/ui/table';
-import { SortOrder } from '@/types';
+import { SortOrder, Template } from '@/types';
 import { useTranslation } from 'next-i18next';
 import { useIsRTL } from '@/utils/locals';
 import { useState } from 'react';
@@ -16,9 +16,9 @@ import { toast } from 'react-toastify';
 import { BsFillBellFill } from 'react-icons/bs';
 
 export type IProps = {
-  categories: Category[] | undefined;
+  template: Template[] | undefined;
 };
-const TemplateList = (categories: any) => {
+const TemplateList = (template: any) => {
   const { t } = useTranslation();
   const rowExpandable = (record: any) => record.children?.length;
   const { alignLeft, alignRight } = useIsRTL();
@@ -170,7 +170,7 @@ const TemplateList = (categories: any) => {
           //@ts-ignore
           columns={columns}
           emptyText={t('table:empty-table-data')}
-          data={categories.categories}
+          data={template.template}
           rowKey="id"
           scroll={{ x: 1000 }}
           expandable={{

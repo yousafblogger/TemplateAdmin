@@ -13,7 +13,7 @@ export default function CreateCategoriesPage() {
           {t('Add Template')}
         </h1>
       </div>
-      <CreateOrUpdateTagForm />
+      <CreateOrUpdateTagForm  />
     </>
   );
 }
