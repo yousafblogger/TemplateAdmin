@@ -14,6 +14,9 @@ import TextArea from '../ui/text-area';
 import Label from '../ui/label';
 import { toast } from 'react-toastify';
 import { BsFillBellFill } from 'react-icons/bs';
+import { WalletPointsIcon } from '../icons/wallet-point';
+import { TrashIcon } from '../icons/trash';
+import { PostFunction } from '@/services/service';
 
 export type IProps = {
   template: Template[] | undefined;
@@ -25,6 +28,8 @@ const TemplateList = (template: any) => {
   const [modalViiew, setModalViiew] = useState<any>(false);
   const [TempId, setTempId] = useState<any>('');
   const [loader, setLoader] = useState<any>(false);
+  const [showDelete, setShowDelete] = useState<any>(false);
+  const [idds, setIds] = useState<any>([]);
   const [notificationVal, setNotificationVal] = useState<any>({
     title: '',
     message: '',
@@ -38,7 +43,68 @@ const TemplateList = (template: any) => {
     column: null,
   });
 
+  const onChangeSelectAll = (e: any) => {
+    setShowDelete(e.target.checked);
+    if (e.target.checked) {
+      const allIds = template.template.map((record: any) => record._id);
+      setIds(allIds);
+    } else {
+      setIds([]);
+    }
+  };
+
+  const onChangeSingle = (id: any) => {
+    setIds((prevSelectedIds: any) => {
+      if (prevSelectedIds.includes(id)) {
+        return prevSelectedIds.filter((existingId: any) => existingId !== id);
+      } else {
+        return [...prevSelectedIds, id];
+      }
+    });
+  };
+
+  const onDeleteAllClick = () => {
+    let obj = idds;
+    PostFunction('delete---end--point--here', obj).then((result: any) => {
+      if (result.status) {
+      }
+    });
+  };
+
   const columns = [
+    {
+      title: (
+        <div style={{ fontFamily: 'poppins', display: 'flex' }}>
+          <span>Select All</span>
+          <input
+            className="ml-3"
+            type="checkbox"
+            onChange={onChangeSelectAll}
+          />
+          {showDelete && (
+            <div
+              onClick={onDeleteAllClick}
+              className="ml-3 text-red-500 transition duration-200 hover:text-red-600 focus:outline-none cursor-pointer"
+            >
+              <TrashIcon width={16} />
+            </div>
+          )}
+        </div>
+      ),
+      dataIndex: '_id',
+      key: 'actions',
+      width: 200,
+      render: (id: string, row: any) => {
+        return (
+          <input
+            className="ml-5"
+            onChange={() => onChangeSingle(row._id)}
+            checked={idds.includes(id)}
+            type="checkbox"
+          />
+        );
+      },
+    },
     {
       title: 'Template Id',
       className: 'cursor-pointer',
@@ -101,7 +167,7 @@ const TemplateList = (template: any) => {
         );
       },
     },
-  
+
     //DELETE AND EDIT
     {
       title: (
@@ -114,15 +180,15 @@ const TemplateList = (template: any) => {
       width: 300,
       align: 'right' as AlignType,
       render: (id: string, row: any) => {
-          return (
-            <LanguageSwitcher
-              deleteModalView="DELETE_TAG"
-              deleteAPIendPoint={`/template/delete/${id}`}
-              slug={id}
-              record={row}
-              routes={Routes?.template}
-            />
-          );
+        return (
+          <LanguageSwitcher
+            deleteModalView="DELETE_TAG"
+            deleteAPIendPoint={`/template/delete/${id}`}
+            slug={id}
+            record={row}
+            routes={Routes?.template}
+          />
+        );
       },
     },
   ];
