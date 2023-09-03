@@ -30,45 +30,52 @@ export default function Templates() {
   const toggleVisible = () => {
     setVisible((v) => !v);
   };
-const GetCat=()=>{
-  GetFunction('/template/AllTemplates').then((result: any) => {
-    setTempData(result.templates);
-    setSearchData(result.templates);
-    setloadingData(false);
-  });
 
-}
+  const GetCat = () => {
+    GetFunction('/template/AllTemplates').then((result: any) => {
+      setTempData(result.templates);
+      setSearchData(result.templates);
+      setloadingData(false);
+    });
+  };
+
   useEffect(() => {
-   GetCat();
-   console.log(TempData)
-
+    GetCat();
+    console.log(TempData);
   }, []);
 
   if (loadingData) return <Loader text={t('common:text-loading')} />;
 
   function handleSearch({ searchText }: { searchText: string }) {
-    //Filter the data based on search text
+    // Filter the data based on search text
     const filteredData = TempData.filter(
-      (item) =>
+      (item: any) =>
         item?.Template_Name?.toLowerCase().includes(searchText.toLowerCase()) ||
         item?.Creater_name?.toLowerCase().includes(searchText.toLowerCase())
     );
     setTempData(filteredData);
   }
+
   const Reset = () => {
     setTempData(SearchData);
   };
-  const filterCategory = (e:any) => {
-  console.log(e);
-  if(e?.label==="Select"||e===null){
-    GetCat();
-    return;
-  }
-  const Filtered=TempData?.filter((t:any)=>{
-    return t?.category?._id===e.id;
-  })
-  setTempData(Filtered);
+
+  const filterCategory = (e: any) => {
+    // if (e?.label === 'Select' || e === null) {
+    //   GetCat();
+    //   return;
+    // }
+    // const Filtered = TempData?.filter((t: any) => {
+    //   return t?.category?._id === e.id;
+    // });
+    // setTempData(Filtered);
+    setloadingData(true);
+    GetFunction('/template/AllTemplates/' + e.id).then((result: any) => {
+      setTempData(result.template);
+      setloadingData(false);
+    });
   };
+
   return (
     <>
       <Card className="mb-8 flex flex-col">
@@ -80,7 +87,7 @@ const GetCat=()=>{
           </div>
 
           <div className="flex w-full flex-col items-center space-y-4 ms-auto md:flex-row md:space-y-0 xl:w-3/4">
-            <Search  onChange={handleSearch} />
+            <Search onChange={handleSearch} />
             <Button onClick={Reset} className="h-12 w-full md:w-auto md:ms-6">
               <span className="block md:hidden xl:block">Reset</span>
             </Button>
@@ -95,20 +102,19 @@ const GetCat=()=>{
                 + {t('form:button-label-add')}
               </span>
             </LinkButton>
+            <Button className="ml-5">Upload Template file</Button>
             <button
-            className="mt-5 flex items-center whitespace-nowrap text-base font-semibold  md:mt-0 md:ms-5"
-            onClick={toggleVisible}
-          >
-            {t('common:text-filter')}{' '}
-            {visible ? (
-              <ArrowUp className="ms-2" />
-            ) : (
-              <ArrowDown className="ms-2" />
-            )}
-          </button>
+              className="mt-5 flex items-center whitespace-nowrap text-base font-semibold  md:mt-0 md:ms-5"
+              onClick={toggleVisible}
+            >
+              {t('common:text-filter')}{' '}
+              {visible ? (
+                <ArrowUp className="ms-2" />
+              ) : (
+                <ArrowDown className="ms-2" />
+              )}
+            </button>
           </div>
-
-        
         </div>
         <div
           className={cn('flex w-full transition', {
@@ -124,7 +130,20 @@ const GetCat=()=>{
           </div>
         </div>
       </Card>
-    
+      <Card className="mb-8">
+        <div className="flex w-full flex-col items-center md:flex-row">
+          <div className="mb-4 flex flex-row gap-1 md:mb-0 md:w-1/4">
+            <h1 className="text-xl font-semibold text-heading">
+              {TempData?.length} - Templates
+            </h1>
+          </div>
+          <div className="flex w-full flex-col items-center space-y-4 ms-auto md:flex-row md:space-y-0 xl:w-3/4">
+            <input type="file" />
+            <Button className="ml-5">Upload Template file</Button>
+          </div>
+        </div>
+      </Card>
+
       <TemplateList template={TempData} />
     </>
   );

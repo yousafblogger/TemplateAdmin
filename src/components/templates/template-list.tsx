@@ -1,9 +1,8 @@
-import { Table } from '@/components/ui/table';
+import { AlignType, Table } from '@/components/ui/table';
 import { SortOrder, Template } from '@/types';
 import { useTranslation } from 'next-i18next';
 import { useIsRTL } from '@/utils/locals';
-import { useState } from 'react';
-import { Category } from '@/types';
+import { useEffect, useState } from 'react';
 import { Routes } from '@/config/routes';
 import LanguageSwitcher from '@/components/ui/lang-action/action';
 import Modal from '../ui/modal/modal';
@@ -26,8 +25,10 @@ const TemplateList = (template: any) => {
   const rowExpandable = (record: any) => record.children?.length;
   const { alignLeft, alignRight } = useIsRTL();
   const [modalViiew, setModalViiew] = useState<any>(false);
+  const [deleteModalViiew, setdeleteModalViiew] = useState<any>(false);
   const [TempId, setTempId] = useState<any>('');
   const [loader, setLoader] = useState<any>(false);
+  const [loaderDelet, setLoaderDelet] = useState<any>(false);
   const [showDelete, setShowDelete] = useState<any>(false);
   const [idds, setIds] = useState<any>([]);
   const [notificationVal, setNotificationVal] = useState<any>({
@@ -42,6 +43,14 @@ const TemplateList = (template: any) => {
     sort: SortOrder.Desc,
     column: null,
   });
+
+  useEffect(() => {
+    if (idds.length > 0) {
+      setShowDelete(true);
+    } else {
+      setShowDelete(false);
+    }
+  }, [idds]);
 
   const onChangeSelectAll = (e: any) => {
     setShowDelete(e.target.checked);
@@ -63,10 +72,22 @@ const TemplateList = (template: any) => {
     });
   };
 
+  const onDeleteAllClickModal = () => {
+    setdeleteModalViiew(true);
+  };
+
   const onDeleteAllClick = () => {
-    let obj = idds;
-    PostFunction('delete---end--point--here', obj).then((result: any) => {
+    setLoaderDelet(true);
+    let obj = { ids: idds };
+    PostFunction('/template/deleteAll', obj).then((result: any) => {
       if (result.status) {
+        setLoaderDelet(false);
+        toast.success(result.message);
+        setLoaderDelet(false);
+      } else {
+        setLoaderDelet(false);
+        toast.error(result.message);
+        setLoaderDelet(false);
       }
     });
   };
@@ -83,7 +104,7 @@ const TemplateList = (template: any) => {
           />
           {showDelete && (
             <div
-              onClick={onDeleteAllClick}
+              onClick={onDeleteAllClickModal}
               className="ml-3 text-red-500 transition duration-200 hover:text-red-600 focus:outline-none cursor-pointer"
             >
               <TrashIcon width={16} />
@@ -263,6 +284,36 @@ const TemplateList = (template: any) => {
             >
               Send Message
             </Button>
+          </div>
+        </Card>
+      </Modal>
+      <Modal open={deleteModalViiew} onClose={() => setdeleteModalViiew(false)}>
+        <Card className="mt-4" style={{ width: 600 }}>
+          <div>
+            <h1 className="text-xl text-red">
+              {' '}
+              Are you sure you want to Delete
+            </h1>
+          </div>
+          <div className="flex justify-between mt-10">
+            <div className="flex justify-end">
+              <Button
+                loading={loader}
+                onClick={() => setdeleteModalViiew(false)}
+                className="rounded-md border p-2"
+              >
+                Cancel
+              </Button>
+            </div>
+            <div className="">
+              <Button
+                loading={loaderDelet}
+                onClick={onDeleteAllClick}
+                className="rounded-md border p-2"
+              >
+                Delete
+              </Button>
+            </div>
           </div>
         </Card>
       </Modal>
