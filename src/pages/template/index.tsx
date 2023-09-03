@@ -61,19 +61,17 @@ export default function Templates() {
   };
 
   const filterCategory = (e: any) => {
-    // if (e?.label === 'Select' || e === null) {
-    //   GetCat();
-    //   return;
-    // }
-    // const Filtered = TempData?.filter((t: any) => {
-    //   return t?.category?._id === e.id;
-    // });
-    // setTempData(Filtered);
     setloadingData(true);
     GetFunction('/template/AllTemplates/' + e.id).then((result: any) => {
       setTempData(result.template);
       setloadingData(false);
     });
+  };
+
+  const onImportFiile = (e: any) => {
+    console.log('====================================');
+    console.log(e);
+    console.log('====================================');
   };
 
   return (
@@ -102,7 +100,6 @@ export default function Templates() {
                 + {t('form:button-label-add')}
               </span>
             </LinkButton>
-            <Button className="ml-5">Upload Template file</Button>
             <button
               className="mt-5 flex items-center whitespace-nowrap text-base font-semibold  md:mt-0 md:ms-5"
               onClick={toggleVisible}
@@ -138,8 +135,8 @@ export default function Templates() {
             </h1>
           </div>
           <div className="flex w-full flex-col items-center space-y-4 ms-auto md:flex-row md:space-y-0 xl:w-3/4">
-            <input type="file" />
-            <Button className="ml-5">Upload Template file</Button>
+            <input type="file" onChange={onImportFiile} />
+            <Button className="ml-5 justify-end">Upload Template file</Button>
           </div>
         </div>
       </Card>

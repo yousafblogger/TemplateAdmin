@@ -16,6 +16,7 @@ import { BsFillBellFill } from 'react-icons/bs';
 import { WalletPointsIcon } from '../icons/wallet-point';
 import { TrashIcon } from '../icons/trash';
 import { PostFunction } from '@/services/service';
+import { Router, useRouter } from 'next/router';
 
 export type IProps = {
   template: Template[] | undefined;
@@ -35,6 +36,7 @@ const TemplateList = (template: any) => {
     title: '',
     message: '',
   });
+  const router = useRouter();
 
   const [sortingObj, setSortingObj] = useState<{
     sort: SortOrder;
@@ -81,13 +83,14 @@ const TemplateList = (template: any) => {
     let obj = { ids: idds };
     PostFunction('/template/deleteAll', obj).then((result: any) => {
       if (result.status) {
-        setLoaderDelet(false);
         toast.success(result.message);
         setLoaderDelet(false);
+        setdeleteModalViiew(false);
+        router.reload();
       } else {
-        setLoaderDelet(false);
         toast.error(result.message);
         setLoaderDelet(false);
+        setdeleteModalViiew(false);
       }
     });
   };
