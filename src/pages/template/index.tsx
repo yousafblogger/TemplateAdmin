@@ -128,20 +128,19 @@ export default function Templates() {
           </div>
         </div>
       </Card>
-      <Card className="mb-8">
-        <div className="flex w-full flex-col items-center md:flex-row">
-          <div className="mb-4 flex flex-row gap-1 md:mb-0 md:w-1/4">
+      <Card className="mb-8 ">
+        <div className="flex w-full flex-col justify-between gap-2 items-center md:flex-row">
+          <div className="mb-4 flex flex-row border-2 md:mb-0 md:w-1/4">
             <h1 className="text-sm font-semibold text-heading">
               {TempData?.length} - Templates on This Page
             </h1>
           </div>
-          <div className="flex w-full flex-col items-center space-y-4 ms-auto md:flex-row md:space-y-0 xl:w-3/4">
-            <input type="file" onChange={onImportFiile} />
+          <div className="flex w-full border-2 justify-between flex-col items-center space-y-4 ms-auto md:flex-row md:space-y-0 ">
+            <input type="file" />
             <Button className="ml-5 justify-end">Upload Template file</Button>
           </div>
         </div>
-      </Card>
-
+      </Card>
       <TemplateList template={TempData} />
     </>
   );
