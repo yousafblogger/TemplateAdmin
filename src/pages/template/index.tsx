@@ -130,12 +130,12 @@ export default function Templates() {
       </Card>
       <Card className="mb-8 ">
         <div className="flex w-full flex-col justify-between gap-2 items-center md:flex-row">
-          <div className="mb-4 flex flex-row border-2 md:mb-0 md:w-1/4">
-            <h1 className="text-sm font-semibold text-heading">
+          <div className="mb-4 flex flex-row  md:mb-0 md:w-1/4">
+            <h1 className="text-sm font-semibold text-heading whitespace-nowrap w-1/2">
               {TempData?.length} - Templates on This Page
             </h1>
           </div>
-          <div className="flex w-full border-2 justify-between flex-col items-center space-y-4 ms-auto md:flex-row md:space-y-0 ">
+          <div className="flex w-full  justify-between flex-col items-center space-y-4 ms-auto md:flex-row md:space-y-0 ">
             <input type="file" />
             <Button className="ml-5 justify-end">Upload Template file</Button>
           </div>
