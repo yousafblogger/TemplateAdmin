@@ -68,6 +68,13 @@ export default function Templates() {
       setloadingData(false);
     });
   };
+  const filterSequence = (e: any) => {
+    setloadingData(true);
+    GetFunction('/template/Sequence').then((result: any) => {
+      setTempData(result.template);
+      setloadingData(false);
+    });
+  };
 
   const onImportFiile = (e: any) => {
     console.log('====================================');
@@ -120,28 +127,37 @@ export default function Templates() {
             'invisible h-0': !visible,
           })}
         >
-          <div className="mt-5 flex w-full flex-col border-t border-gray-200 pt-5 md:mt-8 md:flex-row md:items-center md:pt-8">
+          <div className="mt-5 flex w-full flex-col border-t border-gray-200 pt-5 md:mt-8 md:w-1/2 md:items-center md:pt-8">
             <CategoryTypeFilter
               className="w-full"
               onCategoryFilter={filterCategory}
             />
           </div>
+          <div className="mt-5 flex w-full flex-col border-t border-gray-200 pt-5 md:mt-8 md:w-1/2 md:items-center md:pt-8">
+          <Label>Filter By Sequence</Label>
+          <Button onClick={filterSequence} className="h-12 w-full md:w-auto md:ms-6">
+              <span className="block md:hidden xl:block">
+              Filter By Sequence
+              </span>
+            </Button>
+          </div>
         </div>
       </Card>
-      <Card className="mb-8 ">
-        <div className="flex w-full flex-col justify-between gap-2 items-center md:flex-row">
-          <div className="mb-4 flex flex-row  md:mb-0 md:w-1/4">
-            <h1 className="text-sm font-semibold text-heading whitespace-nowrap w-1/2">
+      <Card className="mb-8">
+        <div className="flex w-full flex-col items-center md:flex-row">
+          <div className="mb-4 flex flex-row gap-1 md:mb-0 md:w-1/2">
+            <h1 className="text-xl font-semibold text-heading">
               {TempData?.length} - Templates on This Page
             </h1>
           </div>
-          <div className="flex w-full  justify-between flex-col items-center space-y-4 ms-auto md:flex-row md:space-y-0 ">
-            <input type="file" />
+          <div className="flex w-full flex-col items-center space-y-4 ms-auto md:flex-row md:space-y-0 xl:w-3/4">
+            <input type="file" onChange={onImportFiile} />
             <Button className="ml-5 justify-end">Upload Template file</Button>
           </div>
         </div>
-      </Card>
-      <TemplateList template={TempData} />
+      </Card>
+
+      <TemplateList template={TempData} GetCat={GetCat} />
     </>
   );
 }

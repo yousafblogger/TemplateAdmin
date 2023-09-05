@@ -15,8 +15,10 @@ import { toast } from 'react-toastify';
 import { BsFillBellFill } from 'react-icons/bs';
 import { WalletPointsIcon } from '../icons/wallet-point';
 import { TrashIcon } from '../icons/trash';
-import { PostFunction } from '@/services/service';
+import { PostFunction, PutFunction } from '@/services/service';
 import { Router, useRouter } from 'next/router';
+import { ArrowUp } from '../icons/arrow-up';
+import { ArrowDown } from '../icons/arrow-down';
 
 export type IProps = {
   template: Template[] | undefined;
@@ -31,6 +33,9 @@ const TemplateList = (template: any) => {
   const [loader, setLoader] = useState<any>(false);
   const [loaderDelet, setLoaderDelet] = useState<any>(false);
   const [showDelete, setShowDelete] = useState<any>(false);
+  const [TrendingModalView, setTrendingModalView] = useState<any>(false);
+  const [unTrendingModalView, setunTrendingModalView] = useState<any>(false);
+
   const [idds, setIds] = useState<any>([]);
   const [notificationVal, setNotificationVal] = useState<any>({
     title: '',
@@ -77,6 +82,13 @@ const TemplateList = (template: any) => {
   const onDeleteAllClickModal = () => {
     setdeleteModalViiew(true);
   };
+  const onTrendingModalView = () => {
+    setTrendingModalView(true);
+  };
+  const onunTrendingModalView = () => {
+    setunTrendingModalView(true);
+  };
+
 
   const onDeleteAllClick = () => {
     setLoaderDelet(true);
@@ -86,7 +98,7 @@ const TemplateList = (template: any) => {
         toast.success(result.message);
         setLoaderDelet(false);
         setdeleteModalViiew(false);
-        router.reload();
+        template.GetCat();
       } else {
         toast.error(result.message);
         setLoaderDelet(false);
@@ -95,10 +107,61 @@ const TemplateList = (template: any) => {
     });
   };
 
+  const onTrending = (reset:any) => {    
+    setLoaderDelet(true);
+   if(reset){
+    let obj = { ids: idds,reset:true };
+    PutFunction('/template/TrendingTemplateUpdate', obj).then((result: any) => {
+      if (result.status) {
+        toast.success(result.message);
+        setLoaderDelet(false);
+        setunTrendingModalView(false);
+        template.GetCat();
+      } else {
+        toast.error(result.message);
+        setLoaderDelet(false);
+        setunTrendingModalView(false);
+      }
+    });
+   }else{
+    let obj = { ids: idds,reset:false };
+    PutFunction('/template/TrendingTemplateUpdate', obj).then((result: any) => {
+      if (result.status) {
+        toast.success(result.message);
+        setLoaderDelet(false);
+        setTrendingModalView(false);
+        template.GetCat();
+      } else {
+        toast.error(result.message);
+        setLoaderDelet(false);
+        setTrendingModalView(false);
+      }
+    });
+   }
+  };
+
+
   const columns = [
     {
       title: (
         <div style={{ fontFamily: 'poppins', display: 'flex' }}>
+            {showDelete && (
+            <>
+           
+             <div
+             onClick={onTrendingModalView}
+             className=" text-red-500 transition duration-200 hover:text-red-600 focus:outline-none cursor-pointer"
+           >
+             <ArrowUp width={20} />
+           </div>
+           <div
+             onClick={onunTrendingModalView}
+             className="ml-2 mr-2 text-black transition duration-200  focus:outline-none cursor-pointer"
+           >
+             <ArrowDown width={20}  />
+           </div>
+           </>
+          )}
           <span>Select All</span>
           <input
             className="ml-3"
@@ -106,12 +169,14 @@ const TemplateList = (template: any) => {
             onChange={onChangeSelectAll}
           />
           {showDelete && (
+            <>
             <div
               onClick={onDeleteAllClickModal}
               className="ml-3 text-red-500 transition duration-200 hover:text-red-600 focus:outline-none cursor-pointer"
             >
               <TrashIcon width={16} />
             </div>
+           </>
           )}
         </div>
       ),
@@ -158,6 +223,13 @@ const TemplateList = (template: any) => {
       key: 'name',
       align: alignLeft,
       render: (category: any) => <span>{category?.name}</span>,
+    },
+    {
+      title: 'Sequence',
+      className: 'cursor-pointer',
+      dataIndex: 'sequence',
+      key: 'name',
+      align: alignLeft,
     },
     {
       title: 'Usage Detail',
@@ -315,6 +387,66 @@ const TemplateList = (template: any) => {
                 className="rounded-md border p-2"
               >
                 Delete
+              </Button>
+            </div>
+          </div>
+        </Card>
+      </Modal>
+      <Modal open={TrendingModalView} onClose={() => setTrendingModalView(false)}>
+        <Card className="mt-4" style={{ width: 600 }}>
+          <div>
+            <h1 className="text-xl text-red">
+              {' '}
+              Are you sure you want to Make Selected Templates Trending?
+            </h1>
+          </div>
+          <div className="flex justify-between mt-10">
+            <div className="flex justify-end">
+              <Button
+                loading={loader}
+                onClick={() => setTrendingModalView(false)}
+                className="rounded-md border p-2"
+              >
+                Cancel
+              </Button>
+            </div>
+            <div className="">
+              <Button
+                loading={loaderDelet}
+                onClick={()=>onTrending(false)}
+                className="rounded-md border p-2"
+              >
+                Make Trending
+              </Button>
+            </div>
+          </div>
+        </Card>
+      </Modal>
+      <Modal open={unTrendingModalView} onClose={() => setunTrendingModalView(false)}>
+        <Card className="mt-4" style={{ width: 600 }}>
+          <div>
+            <h1 className="text-xl text-red">
+              {' '}
+              Are you sure you want to remove Selected Templates From Trending?
+            </h1>
+          </div>
+          <div className="flex justify-between mt-10">
+            <div className="flex justify-end">
+              <Button
+                loading={loader}
+                onClick={() => setunTrendingModalView(false)}
+                className="rounded-md border p-2"
+              >
+                Cancel
+              </Button>
+            </div>
+            <div className="">
+              <Button
+                loading={loaderDelet}
+                onClick={()=>onTrending(true)}
+                className="rounded-md border p-2"
+              >
+                Remove Trending
               </Button>
             </div>
           </div>
