@@ -131,7 +131,7 @@ export default function Templates() {
       <Card className="mb-8">
         <div className="flex w-full flex-col items-center md:flex-row">
           <div className="mb-4 flex flex-row gap-1 md:mb-0 md:w-1/4">
-            <h1 className="text-xl font-semibold text-heading">
+            <h1 className="text-sm font-semibold text-heading">
               {TempData?.length} - Templates on This Page
             </h1>
           </div>
