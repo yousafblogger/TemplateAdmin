@@ -29,7 +29,28 @@ export default function CategoryTypeFilter({
     limit: 999,
     language: locale,
   });
-
+  useEffect(() => {
+    setloadingData(true);
+    GetFunction('/category/AllCategories').then((result: any) => {
+      let ordersData = result.category.map((data: any, i: any) => {
+        return {
+          key: i,
+          id: data._id,
+          value: data.name,
+          label: data.name,
+        };
+      });
+      // Add an object with "select" values
+      ordersData?.unshift({
+        key: -1, // Use a unique key for the special "select" option
+        id: '', // Use an appropriate value for the "id" property
+        value: '', // Set the value to an empty string
+        label: 'Select', // Set the label to "Select"
+      });
+      setCategoryData(ordersData);
+      setloadingData(false);
+    });
+  }, []);
   return (
     <div
       className={cn(
