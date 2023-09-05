@@ -132,7 +132,7 @@ export default function Templates() {
         <div className="flex w-full flex-col items-center md:flex-row">
           <div className="mb-4 flex flex-row gap-1 md:mb-0 md:w-1/4">
             <h1 className="text-xl font-semibold text-heading">
-              {TempData?.length} - Templates
+              {TempData?.length} - Templates on This Page
             </h1>
           </div>
           <div className="flex w-full flex-col items-center space-y-4 ms-auto md:flex-row md:space-y-0 xl:w-3/4">
