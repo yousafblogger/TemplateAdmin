@@ -25,7 +25,7 @@ export default function Templates() {
   const [SearchData, setSearchData] = useState([]);
   const [loadingData, setloadingData] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [category, setCategory] = useState();
+  const [TotalSize, setTotalSize] = useState();
 
   const toggleVisible = () => {
     setVisible((v) => !v);
@@ -34,6 +34,7 @@ export default function Templates() {
   const GetCat = () => {
     GetFunction('/template/AllTemplates').then((result: any) => {
       setTempData(result.templates);
+      setTotalSize(result.totalsize);
       setSearchData(result.templates);
       setloadingData(false);
     });
@@ -80,7 +81,7 @@ export default function Templates() {
         <div className="flex w-full flex-col items-center md:flex-row">
           <div className="mb-4 flex flex-row gap-1 md:mb-0 md:w-1/4">
             <h1 className="text-xl font-semibold text-heading">
-              {TempData?.length} - Templates
+              {TotalSize} - Templates
             </h1>
           </div>
 
