@@ -45,6 +45,25 @@ export function PostFunction(endPoint, values) {
       });
   });
 }
+export function PostFunctionUpload(endPoint, values) {
+  let token = localStorage.getItem('user_token');
+  return new Promise((resolve, reject) => {
+    fetch(base_url + endPoint, {
+      method: 'POST',
+      body: values,
+      headers: {
+        Authorization: 'Bearer ' + token,
+        Accept: 'application/json',
+      },
+    })
+      .then((response) => {
+        resolve(response.json());
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
 
 export function DeleteFunction(endPoint) {
   let token = localStorage.getItem('user_token');

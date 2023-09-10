@@ -9,7 +9,11 @@ import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { Routes } from '@/config/routes';
 import { useRouter } from 'next/router';
-import { GetFunction } from '@/services/service';
+import {
+  GetFunction,
+  PostFunction,
+  PostFunctionUpload,
+} from '@/services/service';
 import Button from '@/components/ui/button';
 import Label from '@/components/ui/label';
 import Select from '@/components/ui/select/select';
@@ -17,6 +21,8 @@ import { ArrowUp } from '@/components/icons/arrow-up';
 import { ArrowDown } from '@/components/icons/arrow-down';
 import CategoryTypeFilter from '@/components/product/category-type-filter';
 import cn from 'classnames';
+import FormData from 'form-data';
+import { toast } from 'react-toastify';
 
 export default function Templates() {
   const { locale } = useRouter();
@@ -25,7 +31,11 @@ export default function Templates() {
   const [SearchData, setSearchData] = useState([]);
   const [loadingData, setloadingData] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [loaderImportt, setLoaderImportt] = useState(false);
   const [TotalSize, setTotalSize] = useState();
+  const [file, setFile] = useState<any>();
+
+  let form = new FormData();
 
   const toggleVisible = () => {
     setVisible((v) => !v);
@@ -77,9 +87,24 @@ export default function Templates() {
   };
 
   const onImportFiile = (e: any) => {
-    console.log('====================================');
-    console.log(e);
-    console.log('====================================');
+    const file = e.target.files[0];
+    setFile(file);
+  };
+  const onUpload = () => {
+    setLoaderImportt(true);
+
+    form.append('file', file);
+    PostFunctionUpload('/template/BulkUpload', form).then((result) => {
+      if (result.status) {
+        toast.success(result.message);
+        setLoaderImportt(false);
+        GetCat();
+      } else {
+        toast.error(result.error);
+        setLoaderImportt(false);
+      }
+      console.log(result);
+    });
   };
 
   return (
@@ -134,10 +159,13 @@ export default function Templates() {
             />
           </div>
           <div className="mt-5 flex w-full flex-col border-t border-gray-200 pt-5 md:mt-8 md:w-1/2 md:items-center md:pt-8">
-          <Label>Filter By Sequence</Label>
-          <Button onClick={filterSequence} className="h-12 w-full md:w-auto md:ms-6">
+            <Label>Filter By Sequence</Label>
+            <Button
+              onClick={filterSequence}
+              className="h-12 w-full md:w-auto md:ms-6"
+            >
               <span className="block md:hidden xl:block">
-              Filter By Sequence
+                Filter By Sequence
               </span>
             </Button>
           </div>
@@ -152,7 +180,13 @@ export default function Templates() {
           </div>
           <div className="flex w-full flex-col items-center space-y-4 ms-auto md:flex-row md:space-y-0 xl:w-3/4">
             <input type="file" onChange={onImportFiile} />
-            <Button className="ml-5 justify-end">Upload Template file</Button>
+            <Button
+              loading={loaderImportt}
+              onClick={onUpload}
+              className="ml-5 justify-end"
+            >
+              Upload Template file
+            </Button>
           </div>
         </div>
       </Card>
