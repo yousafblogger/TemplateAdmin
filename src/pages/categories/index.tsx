@@ -39,14 +39,18 @@ export default function Categories() {
   const [categoryData, setCategoryData] = useState([]);
   const [loadingData, setloadingData] = useState(false);
   const [SearchData, setSearchData] = useState([]);
-
-  useEffect(() => {
-    setloadingData(true);
-    GetFunction('/category/AllCategories').then((result: any) => {
+  const [TotalSize, setTotalSize] = useState();
+ const fetchCategories=()=>{
+  setloadingData(true);
+    GetFunction('/category/AllAdminCategories').then((result: any) => {
       setCategoryData(result.category);
+      setTotalSize(result.TotalSize);
       setSearchData(result.category)
       setloadingData(false);
     });
+ }
+  useEffect(() => {
+  fetchCategories();
   }, []);
 
   if (loadingData) return <Loader text={t('common:text-loading')} />;
@@ -67,7 +71,7 @@ export default function Categories() {
         <div className="flex w-full flex-col items-center md:flex-row">
           <div className="mb-4 md:mb-0 md:w-1/4">
             <h1 className="text-xl font-semibold text-heading">
-              {t('form:input-label-categories')}
+             {TotalSize}--{t('form:input-label-categories')}
             </h1>
           </div>
 
@@ -92,6 +96,7 @@ export default function Categories() {
       </Card>
       <CategoryList
         categories={categoryData}
+        fetchCategories={fetchCategories}
         // paginatorInfo={paginatorInfo}
         // onPagination={handlePagination}
         // onOrder={setOrder}

@@ -31,7 +31,7 @@ export default function CategoryTypeFilter({
   });
   useEffect(() => {
     setloadingData(true);
-    GetFunction('/category/AllCategories').then((result: any) => {
+    GetFunction('/category/AllAdminCategories').then((result: any) => {
       let ordersData = result.category.map((data: any, i: any) => {
         return {
           key: i,

@@ -6,6 +6,10 @@ import { useState } from 'react';
 import { Category } from '@/types';
 import { Routes } from '@/config/routes';
 import LanguageSwitcher from '@/components/ui/lang-action/action';
+import Radio from '../ui/radio/radio';
+import { Switch } from '@headlessui/react';
+import { PostFunction } from '@/services/service';
+import { toast } from 'react-toastify';
 
 export type IProps = {
   categories: Category[] | undefined;
@@ -18,7 +22,7 @@ const CategoryList = (categories: any) => {
   const { t } = useTranslation();
   const rowExpandable = (record: any) => record.children?.length;
   const { alignLeft, alignRight } = useIsRTL();
-
+  const [is_approved,setisApproved]=useState(true)
   const [sortingObj, setSortingObj] = useState<{
     sort: SortOrder;
     column: string | null;
@@ -41,6 +45,22 @@ const CategoryList = (categories: any) => {
     },
   });
 
+  const handlechange=(row:any,catStatus:boolean)=>{
+      let formData = {
+        values: { status: catStatus,name:row.name},
+      };
+        PostFunction('category/update/' + row.slug, formData).then((result) => {
+          if (result.status) {
+            toast.success("Status Updated Successfully");
+            categories.fetchCategories();
+          } else {
+            toast.error(result.error);
+          }
+        });
+   
+  
+  }
+
   const columns = [
     {
       title: 'Name',
@@ -50,6 +70,15 @@ const CategoryList = (categories: any) => {
       align: alignLeft,
       width: 150,
       onHeaderCell: () => onHeaderClick('name'),
+    },
+    {
+      title: 'CAT_ID',
+      className: 'cursor-pointer',
+      dataIndex: '_id',
+      key: 'id',
+      align: alignLeft,
+      width: 250,
+      onHeaderCell: () => onHeaderClick('ids'),
     },
     {
       title: 'No Of Templates',
@@ -70,27 +99,51 @@ const CategoryList = (categories: any) => {
       onHeaderCell: () => onHeaderClick('name'),
     },
     {
-      title: t('Created At'),
-      dataIndex: 'createdAt',
-      key: 'details',
-      ellipsis: true,
+      title: 'Status',
+      className: 'cursor-pointer',
+      key: 'name',
+      dataIndex:'status',
       align: alignLeft,
       width: 150,
+      onHeaderCell: () => onHeaderClick('name'),
+      render: (status: boolean, row: any) => {
+        if(row.sequence !=0)
+          return (
+            <Switch
+             checked={status}
+             onChange={()=>handlechange(row,!status)}
+              className={`${
+                status ? 'bg-accent' : 'bg-gray-300'
+              } relative inline-flex h-6 w-11 items-center rounded-full focus:outline-none`}
+              dir="ltr"
+            >
+              <span className="sr-only">Enable</span>
+              <span
+                className={`${
+                  status ? 'translate-x-6' : 'translate-x-1'
+                } inline-block h-4 w-4 transform rounded-full bg-light transition-transform`}
+              />
+            </Switch>
+          );
+      },
     },
+ 
     {
       title: (
         <span style={{ fontFamily: 'poppins' }}>
           {t('table:table-item-actions')}
         </span>
       ),
-      dataIndex: 'slug',
+      dataIndex: '_id',
       key: 'actions',
-      width: 200,
+      width: 150,
       align: 'right' as AlignType,
       render: (id: string, row: any) => {
         if (row.sequence != 0)
           return (
             <LanguageSwitcher
+              deleteModalView={row.Template_Count>0?"":"DELETE_CATEGORY"}
+              deleteAPIendPoint={`/category/delete/${id}`}
               slug={id}
               record={row}
               routes={Routes?.category}
