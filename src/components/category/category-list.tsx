@@ -144,7 +144,7 @@ const CategoryList = (categories: any) => {
             <LanguageSwitcher
               deleteModalView={row.Template_Count>0?"":"DELETE_CATEGORY"}
               deleteAPIendPoint={`/category/delete/${id}`}
-              slug={id}
+              slug={row.slug}
               record={row}
               routes={Routes?.category}
             />
