@@ -222,8 +222,17 @@ const TemplateList = (template: any) => {
       dataIndex: 'category',
       key: 'name',
       align: alignLeft,
-      render: (category: any) => <span>{category?.name}</span>,
-    },
+      render: (categories: any[]) => (
+        <span>
+          {categories?.map((category, index) => (
+            <span key={index}>
+              {category?.name}
+              {index < categories.length - 1 ? ', ' : ''} {/* Add a comma and space for multiple categories */}
+            </span>
+          ))}
+        </span>
+      ),
+    },    
     {
       title: 'Sequence',
       className: 'cursor-pointer',

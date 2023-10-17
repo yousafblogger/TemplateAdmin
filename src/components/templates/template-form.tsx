@@ -58,9 +58,12 @@ export default function CreateOrUpdateTagForm(initialValues: any) {
   const [loadingData, setloadingData] = useState(true);
   const [template, setTemplate] = useState<any>(initialValues?.initialValues);
   const [categoryData, setCategoryData] = useState<any>([]);
-  const [categorySelectedId, setCategorySelectedId] = useState<any>(initialValues?.initialValues?.category?._id);
-  console.log(initialValues);
-
+  const initialCategory = initialValues?.initialValues?.category;
+  const [categorySelectedId, setCategorySelectedId] = useState<any[]>(
+    Array.isArray(initialCategory) ? initialCategory : []
+  );
+  const [DefaultCategory,seDefaultCategory]=useState<any>([]);
+  const [settings,setSettings]=useState<any>();
   const {
     register,
     handleSubmit,
@@ -81,25 +84,47 @@ export default function CreateOrUpdateTagForm(initialValues: any) {
       let ordersData = result.category.map((data: any, i: any) => {
         return {
           key: i,
-          id: data._id,
+          _id: data._id,
           value: data.name,
           label: data.name,
         };
       });
       // Add an object with "select" values
-      ordersData?.unshift({
-        key: -1, // Use a unique key for the special "select" option
-        id: '', // Use an appropriate value for the "id" property
-        value: '', // Set the value to an empty string
-        label: 'Select', // Set the label to "Select"
-      });
+      // ordersData?.unshift({
+      //   key: -1, // Use a unique key for the special "select" option
+      //   id: '', // Use an appropriate value for the "id" property
+      //   value: '', // Set the value to an empty string
+      //   label: 'Select', // Set the label to "Select"
+      // });
 
       setCategoryData(ordersData);
-
+   
       setloadingData(false);
+      
     });
+    GetFunction('siteSettings').then((result: any) => {
+      if (result.status) {
+        setSettings(result.setting);
+        setloadingData(false);
+      } else {
+        setloadingData(false);
+      }
+    });
+
   }, []);
 
+  useEffect(()=>{
+    let defaultData = initialCategory?.map((data: any, i: any) => {
+      return {
+        key: i,
+        _id: data._id,
+        value: data.name,
+        label: data.name,
+      };
+    });
+    seDefaultCategory(defaultData);
+    setCategoryData(defaultData)
+  },[initialValues.initialValues])
   // if (initialValues) {
   //   setOtherFields(true);
   //   setCreatingLoading(false);
@@ -122,14 +147,15 @@ export default function CreateOrUpdateTagForm(initialValues: any) {
         video_link: values.VideoLink,
         poster_link: values.PoseterLink,
         Creater_desc: values.Creater_desc,
-        category: values.category?._id,
       },
     };
-
     if (categorySelectedId) {
-      obj.values.category = categorySelectedId;
+      let ordersData = categorySelectedId.map((data: any, i: any) => {
+        return data._id;
+      });
+      obj.values.category = ordersData;
     }
-  
+
     if (initialValues) {
       let ID = initialValues.initialValues?._id;
       PutFunction('template/update/' + ID, obj).then((result) => {
@@ -179,11 +205,32 @@ export default function CreateOrUpdateTagForm(initialValues: any) {
   };
 
   const onCategoryChange = (e: any) => {
-    setCategorySelectedId(e.id);
-  };
+    setCategorySelectedId([]);
+    console.log(e);
+    
+    setCategorySelectedId(e);
 
+    // e.forEach((item: any) => {
+    //   const categoryId = item.id;
+    //   // const categoryExists = categorySelectedId?.some(
+    //   //   (selectedItem) => selectedItem._id === categoryId
+    //   // );
+
+    //   // if (categoryExists) {
+    //   //   // Category already exists, so remove it from the array
+    //   //   const updatedCategorySelectedId = categorySelectedId.filter(
+    //   //     (selectedItem) => selectedItem._id !== categoryId
+    //   //   );
+    //   //   setCategorySelectedId(updatedCategorySelectedId);
+    //   // } else {
+    //   //   // Category doesn't exist, so add it to the array
+
+    //   // }
+    // });
+  };
+  const base_url=settings?.Poster_link?.split('.');
+ 
   if (loadingData) return <Loader text={t('common:text-loading')} />;
-  console.log(initialValues);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -287,8 +334,14 @@ export default function CreateOrUpdateTagForm(initialValues: any) {
               <Label>Category</Label>
               <Select
                 {...register('category')}
+                isMulti={true}
                 options={categoryData}
-                value={categoryData.find((option:any) => option.id === categorySelectedId)} // Pre-select based on category ID
+                defaultValue={DefaultCategory}
+                // value={categoryData.filter((option: any) => {
+                //   return categorySelectedId?.some(
+                //     (selectedItem: any) => selectedItem._id === option.id
+                //   );
+                // })} // Pre-select based on category IDs in categorySelectedId
                 onChange={onCategoryChange}
               />
             </div>
@@ -304,7 +357,7 @@ export default function CreateOrUpdateTagForm(initialValues: any) {
               {...register('PoseterLink', {
                 value: template?.poster_link
                   ? template.poster_link
-                  : `https://capcut-templates.com/wp-content/uploads/${templateId}.jpeg`,
+                  : `${base_url[0]}.${base_url[1]}/${templateId}.${base_url[2]}`,
               })}
               label={t('Poster Link')}
               variant="outline"

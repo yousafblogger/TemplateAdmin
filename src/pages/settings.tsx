@@ -25,6 +25,7 @@ import { toast } from 'react-toastify';
 
 type FormValues = {
   Redirect_url: string;
+  Poster_link:string;
 };
 const defaultValues = {};
 
@@ -62,6 +63,7 @@ export default function Categories() {
     let obj = {
       values: {
         Redirect_url: values.Redirect_url,
+        Poster_link:values.Poster_link
       },
     };
     setBtnloadingData(true);
@@ -99,6 +101,14 @@ export default function Categories() {
             label="Redirect Url"
             {...register('Redirect_url', {
               value: data.Redirect_url,
+            })}
+            variant="outline"
+            className="mb-5"
+          />
+           <TextArea
+            label="Poster Url"
+            {...register('Poster_link', {
+              value: data.Poster_link,
             })}
             variant="outline"
             className="mb-5"

@@ -44,6 +44,8 @@ export default function Templates() {
   const GetCat = () => {
     GetFunction('/template/AllTemplates').then((result: any) => {
       setTempData(result.templates);
+      console.log(result.templates);
+      
       setTotalSize(result.totalsize);
       setSearchData(result.templates);
       setloadingData(false);
