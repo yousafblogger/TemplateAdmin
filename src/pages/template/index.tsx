@@ -34,7 +34,7 @@ export default function Templates() {
   const [loaderImportt, setLoaderImportt] = useState(false);
   const [TotalSize, setTotalSize] = useState();
   const [file, setFile] = useState<any>();
-
+  const router=useRouter();
   let form = new FormData();
 
   const toggleVisible = () => {
@@ -101,6 +101,7 @@ export default function Templates() {
         toast.success(result.message);
         setLoaderImportt(false);
         GetCat();
+        router.reload();
       } else {
         toast.error(result.error);
         setLoaderImportt(false);
