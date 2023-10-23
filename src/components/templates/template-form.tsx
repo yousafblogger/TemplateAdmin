@@ -96,9 +96,15 @@ export default function CreateOrUpdateTagForm(initialValues: any) {
       //   value: '', // Set the value to an empty string
       //   label: 'Select', // Set the label to "Select"
       // });
+      let idToMatch = "6497e7b30c5a8414ed89f736";
 
+      let defaultData= ordersData
+        .filter((data:any, i:any) => data._id === idToMatch)
+      if(!initialValues.initialValues){
+        seDefaultCategory(defaultData);
+        setCategorySelectedId(defaultData);
+      }
       setCategoryData(ordersData);
-   
       setloadingData(false);
       
     });
@@ -125,6 +131,7 @@ export default function CreateOrUpdateTagForm(initialValues: any) {
     seDefaultCategory(defaultData);
     setCategoryData(defaultData)
   },[initialValues.initialValues])
+ 
   // if (initialValues) {
   //   setOtherFields(true);
   //   setCreatingLoading(false);
@@ -155,7 +162,9 @@ export default function CreateOrUpdateTagForm(initialValues: any) {
       });
       obj.values.category = ordersData;
     }
-
+    console.log(obj);
+    
+    return
     if (initialValues) {
       let ID = initialValues.initialValues?._id;
       PutFunction('template/update/' + ID, obj).then((result) => {
