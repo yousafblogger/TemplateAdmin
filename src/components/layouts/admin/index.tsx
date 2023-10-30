@@ -6,28 +6,33 @@ import { useTranslation } from 'next-i18next';
 import SidebarItem from '@/components/layouts/navigation/sidebar-item';
 import { useRouter } from 'next/router';
 // import iconn from '../../../../public/image/favicon.png';
-import Image from 'next/image';
 import { useState } from 'react';
 import React from 'react';
 import { Routes } from '@/config/routes';
+import Loader from '@/components/ui/loader/loader';
 
 const AdminLayout: React.FC = ({ children }) => {
   const { t } = useTranslation();
   const { locale } = useRouter();
-  const [isGreater, setIsGreater] = useState(false);
+  const router=useRouter();
+  const [loading, setLoading] = useState(false);
   const [dateArray, setDateArray] = useState([]);
   const [filterList, setFilterList] = useState<any>([]);
   // const userDetail: any = localStorage.getItem('user_detail');
   // const userData: any = JSON.parse(userDetail);
   // const permissionList = userData?.all_permissions;
-  const router = useRouter();
   const dir = locale === 'ar' || locale === 'he' ? 'rtl' : 'ltr';
-  let parcedata: any;
+ useEffect(()=>{
+  setLoading(true)
   if (typeof window !== 'undefined') {
-    const userDetail: any = localStorage?.getItem('user_data');
-    parcedata = JSON.parse(userDetail);
-    console.log(parcedata);
+    const userDetail: any = localStorage?.getItem('user_token');
+    if(!userDetail){
+      router.push(Routes.login);
+    }else{
+      setLoading(false)
+    }
   }
+ },[])
 
   // React.useEffect(() => {
   //   let businessDetail: any = localStorage.getItem('user_business_details');
@@ -62,7 +67,8 @@ const AdminLayout: React.FC = ({ children }) => {
       ))}
     </Fragment>
   );
-
+  if (loading)
+  return <Loader text={t('common:text-loading')} />;
   return (
     <div
       className="flex min-h-screen flex-col bg-gray-100 transition-colors duration-150"

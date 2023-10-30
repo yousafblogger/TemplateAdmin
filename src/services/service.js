@@ -1,6 +1,6 @@
+
 export const base_url =
   'https://templatebackend-3599bc73313e.herokuapp.com/api/';
-
 //GET Function
 
 export function GetFunction(endPoint) {
@@ -15,7 +15,11 @@ export function GetFunction(endPoint) {
       },
     })
       .then((response) => {
-        resolve(response.json());
+        if (response.status === 401) {
+          window.location.href="/login"
+        } else {
+          resolve(response.json());
+        }
       })
       .catch((error) => {
         reject(error);
@@ -38,7 +42,11 @@ export function PostFunction(endPoint, values) {
       },
     })
       .then((response) => {
-        resolve(response.json());
+        if (response.status === 401) {
+          window.location.href="/login"
+        } else {
+          resolve(response.json());
+        }
       })
       .catch((error) => {
         reject(error);
@@ -57,7 +65,11 @@ export function PostFunctionUpload(endPoint, values) {
       },
     })
       .then((response) => {
-        resolve(response.json());
+        if (response.status === 401) {
+          window.location.href="/login"
+        } else {
+          resolve(response.json());
+        }
       })
       .catch((error) => {
         reject(error);
@@ -77,7 +89,11 @@ export function DeleteFunction(endPoint) {
       },
     })
       .then((response) => {
-        resolve(response.json());
+        if (response.status === 401) {
+          window.location.href="/login"
+        } else {
+          resolve(response.json());
+        }
       })
       .catch((error) => {
         reject(error);
@@ -100,7 +116,11 @@ export function PutFunction(endPoint, values) {
       },
     })
       .then((response) => {
-        resolve(response.json());
+        if (response.status === 401) {
+          window.location.href="/login"
+        } else {
+          resolve(response.json());
+        }
       })
       .catch((error) => {
         reject(error);

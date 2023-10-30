@@ -89,13 +89,7 @@ export default function CreateOrUpdateTagForm(initialValues: any) {
           label: data.name,
         };
       });
-      // Add an object with "select" values
-      // ordersData?.unshift({
-      //   key: -1, // Use a unique key for the special "select" option
-      //   id: '', // Use an appropriate value for the "id" property
-      //   value: '', // Set the value to an empty string
-      //   label: 'Select', // Set the label to "Select"
-      // });
+  
       let idToMatch = "6497e7b30c5a8414ed89f736";
 
       let defaultData= ordersData
@@ -162,10 +156,7 @@ export default function CreateOrUpdateTagForm(initialValues: any) {
       });
       obj.values.category = ordersData;
     }
-    console.log(obj);
-    
-    return
-    if (initialValues) {
+    if (initialValues.initialValues) {
       let ID = initialValues.initialValues?._id;
       PutFunction('template/update/' + ID, obj).then((result) => {
         if (result.status) {
